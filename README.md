@@ -26,7 +26,7 @@ then click the reload icon on the extension card in `chrome://extensions`.
 Requires Node.js. The extension itself has no dependencies; npm is only used
 for tooling.
 
-```
+```sh
 npm install
 npm run lint      # ESLint
 npm run package   # builds clean-subs-for-youtube-<version>.zip for the Web Store
