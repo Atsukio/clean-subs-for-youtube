@@ -207,9 +207,18 @@
     });
   }
 
+  // DOM churn is constant on YouTube (infinite scroll, hover previews), so
+  // mutation-driven runs are debounced and skipped entirely off the subs page.
+  let timer = 0;
+  const onMutation = () => {
+    if (!onSubs() && !document.documentElement.classList.contains("rysl-on")) return;
+    clearTimeout(timer);
+    timer = setTimeout(schedule, 100);
+  };
+
   document.addEventListener("yt-navigate-finish", schedule);
   window.addEventListener("popstate", schedule);
-  new MutationObserver(schedule).observe(document.documentElement, {
+  new MutationObserver(onMutation).observe(document.documentElement, {
     childList: true,
     subtree: true,
   });

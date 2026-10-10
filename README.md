@@ -18,8 +18,17 @@ Chrome extension that cleans up the YouTube Subscriptions page:
 ## Adjusting
 
 If YouTube adds another section you want gone, add its heading text
-(lower-case) to `BLOCKED_HEADINGS` in `content.js`, then click the reload
-icon on the extension card in `chrome://extensions`.
+(lower-case) to the `blocked` list in `HEADINGS` at the top of `content.js`,
+then click the reload icon on the extension card in `chrome://extensions`.
+
+## Known limitations
+
+- Section headings and the "All subscriptions" control are matched by their
+  English text, so the extension works best with YouTube set to English.
+- The **Shorts** tab shows only the Shorts YouTube has loaded into the feed;
+  the tab links to the full subscription Shorts page when none are loaded.
+- This extension relies on YouTube's page structure, which can change without
+  notice. If something stops working, please open an issue.
 
 ## License
 
