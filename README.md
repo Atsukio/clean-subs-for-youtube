@@ -8,7 +8,7 @@ Chrome extension that cleans up the YouTube Subscriptions page:
 - Keeps "All subscriptions" on the same row as the tabs
 - Matches YouTube's light or dark theme
 
-![Illustration of the Videos and Shorts tabs on the Subscriptions page](example.png)
+![Illustration of the Videos and Shorts tabs on the Subscriptions page](store-assets/screenshot-1280x800.png)
 
 *Illustration with placeholder content, not a capture of a real account.*
 

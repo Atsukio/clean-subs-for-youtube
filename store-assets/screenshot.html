@@ -1,0 +1,56 @@
+<!doctype html>
+<!-- Source for screenshot-1280x800.png (illustration with placeholder content, uses the real ../styles.css).
+     Render: msedge/chrome --headless --allow-file-access-from-files --hide-scrollbars --window-size=1280,800 --screenshot=screenshot-1280x800.png screenshot.html -->
+<html dark>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  html, body { margin: 0; width: 1280px; height: 800px; overflow: hidden; background: #0f0f0f; color: #f1f1f1; font-family: Roboto, Arial, sans-serif; }
+  .mast { height: 56px; display: flex; align-items: center; padding: 0 16px; gap: 16px; box-sizing: border-box; }
+  .burger { width: 24px; height: 2px; background: #f1f1f1; box-shadow: 0 -7px #f1f1f1, 0 7px #f1f1f1; }
+  .logo { font-weight: 700; font-size: 18px; width: 120px; }
+  .search { flex: 1; max-width: 520px; margin: 0 auto; height: 38px; border: 1px solid #303030; border-radius: 20px; color: #888; font-size: 15px; line-height: 38px; padding: 0 16px; box-sizing: border-box; }
+  .pill { background: #272727; border-radius: 18px; height: 36px; line-height: 36px; padding: 0 16px; font-size: 14px; font-weight: 500; }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; background: #3a3a3a; }
+  .layout { display: flex; }
+  .side { width: 216px; padding: 12px; box-sizing: border-box; font-size: 14px; }
+  .side div { height: 40px; line-height: 40px; padding-left: 12px; border-radius: 10px; }
+  .side .on { background: #272727; font-weight: 500; }
+  .main { flex: 1; padding: 0 24px 0 0; }
+  .main > #rysl-tabs { margin-top: 0; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px 16px; }
+  .thumb { aspect-ratio: 16/9; border-radius: 12px; }
+  .row { display: flex; gap: 12px; margin-top: 12px; }
+  .ch { width: 36px; height: 36px; border-radius: 50%; background: #3a3a3a; flex: none; }
+  .bar { height: 12px; border-radius: 6px; background: #3a3a3a; margin-bottom: 8px; }
+  .meta .bar:first-child { width: 92%; height: 14px; }
+  .meta .bar:nth-child(2) { width: 60%; }
+  .meta .bar:nth-child(3) { width: 45%; }
+</style>
+</head>
+<body>
+<div class="mast"><div class="burger"></div><div class="logo">Subscriptions</div><div class="search">Search</div><div class="pill">+ Create</div><div class="avatar"></div></div>
+<div class="layout">
+  <div class="side"><div>Home</div><div>Shorts</div><div class="on">Subscriptions</div><div>History</div><div>Playlists</div><div>Watch later</div><div>Liked videos</div></div>
+  <div class="main">
+    <div id="rysl-tabs" role="tablist">
+      <button type="button" role="tab" class="rysl-active" aria-selected="true">Videos</button>
+      <button type="button" role="tab" aria-selected="false">Shorts</button>
+      <span class="rysl-slot"><span class="rysl-moved pill">All subscriptions</span></span>
+    </div>
+    <div class="grid" id="g"></div>
+  </div>
+</div>
+<script>
+  const hues = [200, 340, 140, 30, 260, 180, 50, 310];
+  const g = document.getElementById("g");
+  for (let i = 0; i < 12; i++) {
+    const h = hues[i % hues.length];
+    g.insertAdjacentHTML("beforeend",
+      `<div><div class="thumb" style="background:linear-gradient(135deg,hsl(${h} 35% 28%),hsl(${(h + 40) % 360} 35% 18%))"></div>
+       <div class="row"><div class="ch"></div><div class="meta" style="flex:1"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div></div></div>`);
+  }
+</script>
+</body>
+</html>
