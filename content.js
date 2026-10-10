@@ -29,7 +29,7 @@
   ].join(",");
 
   let mode = "videos";
-  try { mode = sessionStorage.getItem(STORE_KEY) || "videos"; } catch (e) {}
+  try { mode = sessionStorage.getItem(STORE_KEY) || "videos"; } catch { /* storage unavailable */ }
 
   const onSubs = () =>
     (location.pathname.replace(/\/+$/, "") || "/") === SUBS_PATH;
@@ -162,7 +162,7 @@
 
   function setMode(m) {
     mode = m === "shorts" ? "shorts" : "videos";
-    try { sessionStorage.setItem(STORE_KEY, mode); } catch (e) {}
+    try { sessionStorage.setItem(STORE_KEY, mode); } catch { /* storage unavailable */ }
     schedule();
   }
 

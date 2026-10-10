@@ -21,6 +21,17 @@ If YouTube adds another section you want gone, add its heading text
 (lower-case) to the `blocked` list in `HEADINGS` at the top of `content.js`,
 then click the reload icon on the extension card in `chrome://extensions`.
 
+## Development
+
+Requires Node.js. The extension itself has no dependencies; npm is only used
+for tooling.
+
+```
+npm install
+npm run lint      # ESLint
+npm run package   # builds clean-subs-for-youtube-<version>.zip for the Web Store
+```
+
 ## Known limitations
 
 - Section headings and the "All subscriptions" control are matched by their
