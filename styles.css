@@ -1,0 +1,121 @@
+/* Scope: html.rysl-on is only set on /feed/subscriptions */
+
+/* ---------- Always ---------- */
+html.rysl-on .rysl-sec-blocked,
+html.rysl-on .rysl-hidden-title {
+  display: none !important;
+}
+
+/* ---------- Videos tab ---------- */
+html.rysl-mode-videos ytd-browse[page-subtype="subscriptions"] .rysl-sec-shorts,
+html.rysl-mode-videos ytd-browse[page-subtype="subscriptions"] ytd-reel-shelf-renderer,
+html.rysl-mode-videos ytd-browse[page-subtype="subscriptions"] ytd-rich-shelf-renderer[is-shorts],
+html.rysl-mode-videos ytd-browse[page-subtype="subscriptions"] ytd-rich-section-renderer:not(.rysl-sec-videos):not(:has(.rysl-sec-videos)),
+html.rysl-mode-videos ytd-browse[page-subtype="subscriptions"] ytd-rich-item-renderer[is-slim-media],
+html.rysl-mode-videos ytd-browse[page-subtype="subscriptions"] ytd-rich-item-renderer:has(a[href^="/shorts/"]),
+html.rysl-mode-videos ytd-browse[page-subtype="subscriptions"] ytd-video-renderer:has(a[href^="/shorts/"]),
+html.rysl-mode-videos ytd-browse[page-subtype="subscriptions"] ytd-grid-video-renderer:has(a[href^="/shorts/"]) {
+  display: none !important;
+}
+
+/* ---------- Shorts tab ---------- */
+/* Hide the videos section and any regular videos sitting directly in the grid */
+html.rysl-mode-shorts ytd-browse[page-subtype="subscriptions"] .rysl-sec-videos,
+html.rysl-mode-shorts ytd-browse[page-subtype="subscriptions"] ytd-rich-grid-renderer > #contents > ytd-rich-item-renderer:not([is-slim-media]):not(:has(a[href^="/shorts/"])),
+html.rysl-mode-shorts ytd-browse[page-subtype="subscriptions"] ytd-rich-grid-renderer > #contents > ytd-continuation-item-renderer {
+  display: none !important;
+}
+
+/* Lay the Shorts shelf out as a wrapping grid instead of a single row */
+html.rysl-mode-shorts .rysl-sec-shorts #contents,
+html.rysl-mode-shorts .rysl-sec-shorts #items,
+html.rysl-mode-shorts ytd-reel-shelf-renderer #items {
+  flex-wrap: wrap !important;
+  overflow: visible !important;
+  transform: none !important;
+  width: auto !important;
+}
+html.rysl-mode-shorts .rysl-sec-shorts #left-arrow,
+html.rysl-mode-shorts .rysl-sec-shorts #right-arrow,
+html.rysl-mode-shorts ytd-reel-shelf-renderer #left-arrow,
+html.rysl-mode-shorts ytd-reel-shelf-renderer #right-arrow {
+  display: none !important;
+}
+
+/* ---------- Tab bar ---------- */
+/* Colours follow YouTube's own theme: html[dark] is set when YouTube is in dark mode */
+#rysl-tabs {
+  --rysl-bg: #ffffff;
+  --rysl-text: #0f0f0f;
+  --rysl-text-secondary: #606060;
+  --rysl-chip: rgba(0, 0, 0, 0.05);
+  --rysl-chip-hover: rgba(0, 0, 0, 0.1);
+  --rysl-active-bg: #0f0f0f;
+  --rysl-active-text: #ffffff;
+  --rysl-border: rgba(0, 0, 0, 0.1);
+  --rysl-link: #065fd4;
+}
+html[dark] #rysl-tabs {
+  --rysl-bg: #0f0f0f;
+  --rysl-text: #f1f1f1;
+  --rysl-text-secondary: #aaaaaa;
+  --rysl-chip: rgba(255, 255, 255, 0.1);
+  --rysl-chip-hover: rgba(255, 255, 255, 0.2);
+  --rysl-active-bg: #f1f1f1;
+  --rysl-active-text: #0f0f0f;
+  --rysl-border: rgba(255, 255, 255, 0.1);
+  --rysl-link: #3ea6ff;
+}
+#rysl-tabs {
+  position: sticky;
+  top: var(--ytd-masthead-height, 56px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 0 16px;
+  padding: 12px 8px;
+  background: var(--rysl-bg);
+  border-bottom: 1px solid var(--rysl-border);
+  font-family: "Roboto", "Arial", sans-serif;
+  grid-column: 1 / -1;
+}
+#rysl-tabs button {
+  font: inherit;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 36px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--rysl-text);
+  background: var(--rysl-chip);
+  transition: background-color 0.15s;
+}
+#rysl-tabs button:hover { background: var(--rysl-chip-hover); }
+#rysl-tabs button.rysl-active {
+  color: var(--rysl-active-text);
+  background: var(--rysl-active-bg);
+}
+#rysl-tabs .rysl-note {
+  display: none;
+  margin-left: 8px;
+  font-size: 14px;
+  color: var(--rysl-text-secondary);
+}
+#rysl-tabs .rysl-note a { color: var(--rysl-link); }
+#rysl-tabs.rysl-empty .rysl-note { display: inline; }
+
+/* Right-hand side of the row: YouTube's "All subscriptions" control */
+#rysl-tabs .rysl-slot {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+#rysl-tabs .rysl-slot > .rysl-moved {
+  display: inline-flex !important;
+  margin: 0 !important;
+}

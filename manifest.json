@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Clean Subs for YouTube",
+  "version": "1.0.0",
+  "description": "Cleans up the YouTube Subscriptions page: removes 'Most relevant' and other extra sections, and adds sticky Videos and Shorts tabs.",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.youtube.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "styles.css"
+      ],
+      "run_at": "document_start"
+    }
+  ],
+  "short_name": "Clean Subs",
+  "homepage_url": "https://github.com/Atsukio/clean-subs-for-youtube"
+}
