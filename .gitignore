@@ -5,3 +5,4 @@ desktop.ini
 *.crx
 *.pem
 node_modules/
+dist/

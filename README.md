@@ -33,7 +33,7 @@ for tooling.
 ```sh
 npm install
 npm run lint      # ESLint
-npm run package   # builds clean-subs-for-youtube-<version>.zip for the Web Store
+npm run package   # builds dist/clean-subs-for-youtube-<version>.zip for the Web Store
 ```
 
 ## Known limitations
