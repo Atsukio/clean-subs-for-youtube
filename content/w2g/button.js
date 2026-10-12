@@ -7,8 +7,8 @@
   // Two-tone "W" mark with a "+" while idle. `ink` is the colour of the "+" and the second stroke of the W.
   const icon = (ink) => `<svg viewBox="0 0 36 24" width="30" height="20" fill="none" stroke-width="3.4"
     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-    <path class="plus" d="M6 7.5v9M1.5 12h9" stroke="${ink}" stroke-width="2.6"/>
-    <g transform="translate(12 0)"><path d="M3 5l4.5 14L12 9" stroke="#FDBD00"/><path d="M12 9l4.5 10L21 5" stroke="${ink === '#fff' ? '#E8EDF4' : ink}"/></g></svg>`;
+    <path fill="none" class="plus" d="M6 7.5v9M1.5 12h9" stroke="${ink}" stroke-width="2.6"/>
+    <g transform="translate(12 0)"><path fill="none" d="M3 5l4.5 14L12 9" stroke="#FDBD00"/><path fill="none" d="M12 9l4.5 10L21 5" stroke="${ink === '#fff' ? '#E8EDF4' : ink}"/></g></svg>`;
 
   // Thumbnails: a small overlay button that appears on hover, like YouTube's own (Watch later etc.)
   const STYLE_THUMB = `
@@ -60,8 +60,6 @@
   // The pill that matches YouTube's own buttons: a plain <button> that reuses the class names of a real
   // sibling (Share, Download...) read at runtime, so size, font, shape, colours, hover and light/dark mode all
   // come from YouTube's CSS and survive it renaming things. Returns null when there is no sibling to copy yet.
-  const NATIVE_ICON = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" ' +
-    'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path fill="none" d="M3 6l4 12 5-9 5 9 4-12"/></svg>'; // fill on the path: YouTube's icon wrappers set fill:currentColor
   const OUR_CLASS = 'efy-w2g-native';
   // YouTube's button shape classes appear as ytSpecButtonShapeNext... (current) or yt-spec-button-shape-next... (older)
   const SHAPE_CLASS = /yt-?spec-?button-?shape/i;
@@ -76,31 +74,71 @@
     );
     if (!sibling) return null;
     const classOf = (selector) => sibling.querySelector(selector)?.className || '';
-    // The element YouTube spaces and lays out in the row: the ancestor that is a direct child of the bar
-    let ref = sibling;
-    while (ref.parentElement && ref.parentElement !== bar) ref = ref.parentElement;
 
     const host = document.createElement('div');
-    host.className = OUR_CLASS;
+    // The outer element YouTube lays out in the row (a direct child of the bar). Its classes (e.g. ytd-menu-renderer)
+    // are what the row's spacing rules hang off, so our wrapper carries them too.
+    let outer = sibling;
+    while (outer.parentElement && outer.parentElement !== bar) outer = outer.parentElement;
+    host.className = (OUR_CLASS + ' ' + outer.className).trim();
     host.style.cssText = 'display:inline-flex;align-items:center;';
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = sibling.className;
-    const icon = document.createElement('div');
-    icon.className = classOf(ICON_PART);
-    icon.setAttribute('aria-hidden', 'true');
+    const iconBox = document.createElement('div');
+    iconBox.className = classOf(ICON_PART);
+    iconBox.setAttribute('aria-hidden', 'true');
     const glyph = document.createElement('div');
-    glyph.style.cssText = 'width:24px;height:24px;display:block;';
-    glyph.innerHTML = NATIVE_ICON;
-    icon.append(glyph);
+    glyph.style.cssText = 'width:28px;height:19px;display:block;flex:none;margin:0 -2px;';
+    glyph.innerHTML = icon('currentColor');
+    const svg = glyph.querySelector('svg');
+    svg.setAttribute('width', '28');
+    svg.setAttribute('height', '19');
+    svg.style.pointerEvents = 'none';
+    const plus = glyph.querySelector('.plus');
+    iconBox.append(glyph);
     const text = document.createElement('div');
     text.className = classOf(TEXT_PART);
-    btn.append(icon, text);
+    btn.append(iconBox, text);
+
+    // YouTube's hover/press highlight is a <yt-touch-feedback-shape> holding a stroke and a fill. Rebuild it from plain
+    // elements with the same classes (read from the sibling, with the known names as a fallback) and drive the fill's
+    // opacity here, because YouTube's own script is not attached to a button we create.
+    const feedbackClass = (selector, fallback) => sibling.querySelector(selector)?.className || fallback;
+    const feedback = document.createElement('div');
+    feedback.setAttribute('aria-hidden', 'true');
+    feedback.className = feedbackClass('[class*="TouchFeedbackShapeHost"]', 'ytSpecTouchFeedbackShapeHost ytSpecTouchFeedbackShapeTouchResponse');
+    const stroke = document.createElement('div');
+    stroke.className = feedbackClass('[class*="TouchFeedbackShapeStroke"]', 'ytSpecTouchFeedbackShapeStroke');
+    const fill = document.createElement('div');
+    fill.className = feedbackClass('[class*="TouchFeedbackShapeFill"]', 'ytSpecTouchFeedbackShapeFill');
+    feedback.append(stroke, fill);
+    btn.append(feedback);
+    // ...and the static rim light (<yt-light-shape> with a wash child), same idea: plain elements, same classes
+    const light = sibling.querySelector('[class*="LightShapeHost" i]');
+    if (light) {
+      const lightHost = document.createElement('div');
+      lightHost.setAttribute('aria-hidden', 'true');
+      lightHost.className = light.className;
+      lightHost.setAttribute('style', '--yt-light-wash-opacity: 0; --yt-light-wash-x: 0px; --yt-light-wash-y: 0px; --yt-light-wash-size: 0px;');
+      if (light.firstElementChild) {
+        const wash = document.createElement('div');
+        wash.className = light.firstElementChild.className;
+        lightHost.append(wash);
+      }
+      btn.append(lightHost);
+    }
     host.append(btn);
+    const layer = (opacity) => { fill.style.opacity = opacity; };
+    btn.addEventListener('pointerenter', () => layer('0.1'));
+    btn.addEventListener('pointerleave', () => layer(''));
+    btn.addEventListener('pointerdown', () => layer('0.2'));
+    btn.addEventListener('pointerup', () => layer('0.1'));
 
     let timer;
     const setState = (state, title = '') => {
       text.textContent = LABELS_PILL[state];
+      if (plus) plus.style.display = state === 'idle' ? '' : 'none'; // the "+" only while idle
       btn.title = title || (state === 'idle' ? 'Add to W2G' : '');
       btn.style.opacity = state === 'loading' ? '0.7' : '';
       btn.style.boxShadow = state === 'added' ? 'inset 0 0 0 2px #2e9d4f' : state === 'error' ? 'inset 0 0 0 2px #c0392b' : '';
@@ -133,18 +171,32 @@
     });
 
     const reset = () => { clearTimeout(timer); delete btn.dataset.busy; setState('idle'); };
-    // ref: the neighbour's outer element, whose margins our spacing should match
-    return { host, reset, ref };
+    return { host, reset };
   }
 
-  // Give the native pill the same side margins as a real neighbour, whatever mechanism YouTube spaces them with
-  function matchSpacing(info) {
-    if (!info.ref?.isConnected) return;
-    const ref = getComputedStyle(info.ref);
-    const mine = getComputedStyle(info.host);
-    for (const side of ['marginLeft', 'marginRight']) {
-      if (mine[side] !== ref[side]) info.host.style[side] = ref[side];
+  // Make the gaps either side of our pill equal the gap YouTube leaves between its own buttons. Measured in pixels,
+  // so it works whatever creates that spacing (margins on either neighbour, flex gap...).
+  function matchSpacing(bar, host) {
+    const rect = (el) => el.getBoundingClientRect();
+    const items = [...bar.children].filter((el) => rect(el).width > 0);
+    const at = items.indexOf(host);
+    if (at < 0) return;
+    let target = 8; // YouTube's usual gap, used when there is no pair of its own buttons to measure
+    for (let k = 0; k + 1 < items.length; k++) {
+      if (items[k] === host || items[k + 1] === host) continue;
+      const gap = rect(items[k + 1]).left - rect(items[k]).right;
+      if (gap >= 0 && gap <= 32) { target = gap; break; }
     }
+    const adjust = (side, gap) => {
+      const current = parseFloat(getComputedStyle(host)[side]) || 0;
+      const wanted = Math.max(0, current + target - gap);
+      if (Math.abs(wanted - current) > 0.5) host.style[side] = wanted + 'px';
+    };
+    const sameRow = (el) => Math.abs((rect(el).top + rect(el).bottom) - (rect(host).top + rect(host).bottom)) < 20;
+    const prev = items[at - 1];
+    const next = items[at + 1];
+    if (prev && sameRow(prev)) adjust('marginLeft', rect(host).left - rect(prev).right);
+    if (next && sameRow(next)) adjust('marginRight', rect(next).left - rect(host).right);
   }
 
   // variant: 'thumb' (hover overlay on a thumbnail) or 'pill' (video page action row)
@@ -154,7 +206,7 @@
     const host = document.createElement('div');
     const root = host.attachShadow({ mode: 'closed' });
     root.innerHTML = `<style>${pill ? STYLE_PILL : STYLE_THUMB}</style>` +
-      `<button type="button">${pill ? NATIVE_ICON : icon('#fff')}<span></span></button>`;
+      `<button type="button">${icon(pill ? 'currentColor' : '#fff')}<span></span></button>`;
     const btn = root.querySelector('button');
     const label = root.querySelector('span');
     let timer;
@@ -225,9 +277,9 @@
     if (kind === 'watch') {
       const readVideo = () => adapter.getWatchVideo();
       const native = createNativePill(target, readVideo);
-      const { host, reset, ref } = native || createButton(target, readVideo, 'pill');
+      const { host, reset } = native || createButton(target, readVideo, 'pill');
       placePill(target, host);
-      injected.set(target, { host, reset, ref, native: !!native, kind });
+      injected.set(target, { host, reset, native: !!native, kind });
       return;
     }
     const madeRelative = getComputedStyle(target).position === 'static';
@@ -277,7 +329,7 @@
           }
         }
         placePill(bar, info.host); // also re-attaches the pill if YouTube re-rendered the row
-        if (info.native) matchSpacing(info);
+        if (info.native) matchSpacing(bar, info.host);
         else applyTheme(info.host); // the user may have switched YouTube's theme
       }
     } else {

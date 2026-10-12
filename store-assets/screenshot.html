@@ -115,7 +115,7 @@
   const ICON = `<svg viewBox="0 0 36 24" width="30" height="20" fill="none" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <path class="plus" d="M6 7.5v9M1.5 12h9" stroke="#fff" stroke-width="2.6"/>
     <g transform="translate(12 0)"><path d="M3 5l4.5 14L12 9" stroke="#FDBD00"/><path d="M12 9l4.5 10L21 5" stroke="#E8EDF4"/></g></svg>`;
-  document.getElementById("w2gpill").innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l4 12 5-9 5 9 4-12"/></svg>W2G';
+  document.getElementById("w2gpill").innerHTML = ICON.replace(/#fff/g, "currentColor").replace('stroke="#E8EDF4"', 'stroke="currentColor"') + "W2G";
   const hues = [200, 340, 140, 30, 260, 180, 50, 310];
   const g = document.getElementById("g");
   for (let i = 0; i < 12; i++) {

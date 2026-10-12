@@ -122,14 +122,23 @@ with **Roboto**.
   (`html.efy-no-shorts:not(.rysl-f-tabs)`), otherwise the Shorts tab would have nothing to show.
 - On `/watch` the W button is a pill in the action row (`ytd-watch-metadata #top-level-buttons-computed`), placed right
   after the Like/Dislike group (adapter: `isWatchPage`, `watchTargetSelector`, `getWatchVideo`), controlled by the
-  `w2gWatchPage` toggle. It is built by `createNativePill()`: a plain `<button>` that **copies the class names of a real
-  sibling button** (Share, Download...) at runtime, so size, font, shape, colours, hover and light/dark all come from
-  YouTube's own CSS. YouTube's classes are camelCase (`ytSpecButtonShapeNextHost/Tonal/Mono/SizeM`, size M = 40px high, 20px
-  radius); older markup used `yt-spec-button-shape-next`, so matching is case-insensitive for both (`SHAPE_CLASS`). Spacing is
-  copied from the sibling's outer element (the direct child of the row) by `matchSpacing()`. If no sibling exists yet, a
-  shadow-DOM fallback pill (40px, `--yt-sys-color-baseline--*` colours, `data-theme` detection) is used and swapped for the
-  native one on a later scan. Do not use `--yt-spec-*` variables: they do not exist on the real page. The icon is a
-  stroked glyph with `fill="none"` on the path, because YouTube's icon wrappers set `fill: currentColor`.
+  `w2gWatchPage` toggle. It is built by `createNativePill()` from a **real sibling button (Share, Download...), copying
+  its class names at runtime** so size, font, shape, colours, hover and light/dark come from YouTube's own CSS. What the
+  real Share markup looks like (verified from a pasted copy): `yt-button-view-model.ytd-menu-renderer > button-view-model >
+  button.ytSpecButtonShapeNextHost/Tonal/Mono/SizeM/IconLeading/...`, containing an icon div (`ytSpecButtonShapeNextIcon`),
+  a text div (`...ButtonTextContent`), a `<yt-touch-feedback-shape>` (Host/Stroke/Fill divs: the hover/press highlight)
+  and a `<yt-light-shape>` (the rim light). Size M is 40px high with a 20px radius. Classes are camelCase now; older markup
+  used `yt-spec-button-shape-next`, so matching is case-insensitive for both (`SHAPE_CLASS`). We rebuild the touch-feedback and
+  light layers as plain divs with the same classes and drive the feedback fill's opacity ourselves (hover .1, press .2),
+  because YouTube's custom elements are not attached to a button we create.
+- Spacing: YouTube spaces the row through a class on the outer wrapper (`ytd-menu-renderer`), so our wrapper copies the
+  sibling wrapper's classes, and `matchSpacing()` then measures the real pixel gap between two of YouTube's own buttons and
+  adjusts our side margins to match, whichever neighbour carries the spacing. Do not copy margins from a neighbour: that
+  produced a missing gap on the real page.
+- The logo is the coloured "+W" (yellow stroke, theme-coloured stroke, "+" only while idle), 28x19 inside a 24px layout
+  slot, with `fill="none"` on every path because YouTube's icon wrappers set `fill: currentColor`.
+- If no sibling exists yet, a shadow-DOM fallback pill (40px, `--yt-sys-color-baseline--*` colours, `data-theme` detection) is used
+  and swapped for the native one on a later scan. Do not use `--yt-spec-*` variables: they do not exist on the real page.
   YouTube re-renders the row, so `scan()` re-places the pill after Like/Dislike when needed, and `yt-navigate-finish` resets
   it to idle so "Added" does not carry over to the next video. Thumbnails keep the hover overlay variant.
 - The mutation observers are debounced and idle off the relevant pages. Keep it that way: YouTube
