@@ -35,7 +35,7 @@ popup/                   settings popup (popup.html/css/js)
 lib/settings.js          feature toggles shared by content scripts and popup (globalThis.EFY)
 lib/ids.js               YouTube URL -> canonical id (service worker only)
 icons/                   16/48/128 extension icons (generated, see Icon)
-store-assets/            Web Store icon, screenshot and its HTML source
+store-assets/            Web Store icon, screenshot + HTML source, LISTING.md (dashboard values)
 scripts/                 package.js (zip), build-assets.mjs (theme + fonts)
 PRIVACY.md               privacy policy; its GitHub URL is entered in the Web Store listing
 dist/                    build output, git-ignored
