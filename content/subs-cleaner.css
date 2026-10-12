@@ -1,8 +1,13 @@
-/* Scope: html.rysl-on is only set on /feed/subscriptions */
+/* Scope: these classes are only set on /feed/subscriptions, and only for the
+   features switched on in the extension popup:
+     rysl-f-blocked  hide "Most relevant" and other extra shelves
+     rysl-f-tabs     Videos | Shorts tabs (YouTube's own titles are hidden) */
 
-/* ---------- Always ---------- */
-html.rysl-on .rysl-sec-blocked,
-html.rysl-on .rysl-hidden-title {
+html.rysl-f-blocked .rysl-sec-blocked {
+  display: none !important;
+}
+
+html.rysl-f-tabs .rysl-hidden-title {
   display: none !important;
 }
 

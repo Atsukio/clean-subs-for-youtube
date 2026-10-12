@@ -31,6 +31,11 @@
   let mode = "videos";
   try { mode = sessionStorage.getItem(STORE_KEY) || "videos"; } catch { /* storage unavailable */ }
 
+  // Defaults apply immediately (no flash on first paint); stored toggles arrive a moment later.
+  let settings = { ...EFY.DEFAULTS };
+  EFY.load().then((s) => { settings = s; schedule(); });
+  EFY.onChange((s) => { settings = s; schedule(); });
+
   const onSubs = () =>
     (location.pathname.replace(/\/+$/, "") || "/") === SUBS_PATH;
 
@@ -113,6 +118,24 @@
     return bar;
   }
 
+  // Where "All subscriptions" came from, so it can go back when a toggle is switched off
+  let moved = null;
+
+  function restoreAllSubscriptions() {
+    if (!moved) return;
+    const { control, parent, next } = moved;
+    moved = null;
+    control.classList.remove("rysl-moved");
+    if (parent.isConnected) parent.insertBefore(control, next && next.parentNode === parent ? next : null);
+  }
+
+  function removeTabs() {
+    const bar = document.getElementById("rysl-tabs");
+    if (!bar) return;
+    restoreAllSubscriptions();
+    bar.remove();
+  }
+
   // Move YouTube's "All subscriptions" control onto the same row as the tabs
   function moveAllSubscriptions(browse, bar) {
     const slot = bar.querySelector(".rysl-slot");
@@ -138,6 +161,7 @@
     }
 
     const oldRow = control.parentElement;
+    moved = { control, parent: oldRow, next: control.nextSibling };
     control.classList.add("rysl-moved");
     slot.appendChild(control);
 
@@ -169,22 +193,26 @@
   function apply() {
     const root = document.documentElement;
     const active = onSubs();
+    const blockedOn = active && settings.hideMostRelevant;
+    const tabsOn = active && settings.tabs;
     root.classList.toggle("rysl-on", active);
-    root.classList.toggle("rysl-mode-videos", active && mode === "videos");
-    root.classList.toggle("rysl-mode-shorts", active && mode === "shorts");
-    if (!active) {
-      document.getElementById("rysl-tabs")?.remove();
-      return;
-    }
+    root.classList.toggle("rysl-f-blocked", blockedOn);
+    root.classList.toggle("rysl-f-tabs", tabsOn);
+    root.classList.toggle("rysl-mode-videos", tabsOn && mode === "videos");
+    root.classList.toggle("rysl-mode-shorts", tabsOn && mode === "shorts");
+    if (!tabsOn) removeTabs();
+    if (!blockedOn && !tabsOn) return;
     const browse = getBrowse();
     if (!browse) return;
 
     const videosAnchor = tagSections(browse);
+    if (!tabsOn) return;
     const bar = placeTabs(browse, videosAnchor);
     if (mode === "shorts") expandShorts(browse);
 
     if (bar) {
-      moveAllSubscriptions(browse, bar);
+      if (settings.allSubsInRow) moveAllSubscriptions(browse, bar);
+      else restoreAllSubscriptions();
       bar.querySelectorAll("button[data-mode]").forEach((b) => {
         const on = b.dataset.mode === mode;
         b.classList.toggle("rysl-active", on);

@@ -1,4 +1,4 @@
-// Builds dist/clean-subs-for-youtube-<version>.zip containing only the files
+// Builds dist/everything-for-youtube-<version>.zip containing only the files
 // the extension needs. Uses `tar` on Windows and
 // `zip` elsewhere, so no extra npm dependencies are required.
 const fs = require("fs");
@@ -8,8 +8,8 @@ const { execFileSync } = require("child_process");
 const root = path.join(__dirname, "..");
 const manifest = JSON.parse(fs.readFileSync(path.join(root, "manifest.json"), "utf8"));
 const dist = path.join(root, "dist");
-const out = path.join(dist, `clean-subs-for-youtube-${manifest.version}.zip`);
-const files = ["manifest.json", "content.js", "styles.css", "icons"];
+const out = path.join(dist, `everything-for-youtube-${manifest.version}.zip`);
+const files = ["manifest.json", "background", "content", "lib", "popup", "icons"];
 
 for (const f of files) {
   if (!fs.existsSync(path.join(root, f))) throw new Error(`Missing ${f}`);
