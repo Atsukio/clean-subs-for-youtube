@@ -81,7 +81,7 @@ with **Roboto**.
   script, run `npm run assets`, and commit the generated files. Never hand-edit `theme.css`.
 - Use tokens (`var(--md-sys-color-*)`, `--md-sys-shape-*`, `--md-sys-typescale-*`,
   `--md-sys-state-*`), not raw values. Components in use: switch, outlined text field with floating
-  label, filled / tonal / text buttons, segmented button (the Videos|Shorts tabs).
+  label, filled / tonal / text buttons, divider between setting groups, segmented button (the Videos|Shorts tabs).
 - Popup type sizes are deliberately one step down the M3 scale for a compact popup: title-medium (16px)
   heading, body-medium (14px) for list items and fields, body-small (12px) for supporting text.
   Do not go back to body-large/title-large without a reason.
