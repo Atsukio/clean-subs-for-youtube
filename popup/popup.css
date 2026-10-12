@@ -23,15 +23,15 @@ section { margin: 0; }
 /* M3 divider (outline-variant) between the settings groups */
 section + section { margin-top: 12px; border-top: 1px solid var(--md-sys-color-outline-variant); }
 
-/* ---------- List item with a switch (56dp single line, 72dp with supporting text) ---------- */
+/* ---------- List item with a switch (compact: 48dp, the M3 minimum touch target) ---------- */
 .item {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  min-height: 56px;
-  padding: 8px 8px 8px 8px;
+  min-height: 48px;
+  padding: 6px 8px;
   border-radius: var(--md-sys-shape-medium);
   cursor: pointer;
   /* state layer */
@@ -52,13 +52,13 @@ section + section { margin-top: 12px; border-top: 1px solid var(--md-sys-color-o
   color: var(--md-sys-color-on-surface-variant);
 }
 
-/* ---------- Switch ---------- */
+/* ---------- Switch (compact 40x24; the M3 default is 52x32) ---------- */
 input[role="switch"] {
   appearance: none;
   position: relative;
   flex: none;
-  width: 52px;
-  height: 32px;
+  width: 40px;
+  height: 24px;
   margin: 0;
   border-radius: var(--md-sys-shape-full);
   border: 2px solid var(--md-sys-color-outline);
@@ -70,10 +70,10 @@ input[role="switch"]::before {            /* handle */
   content: "";
   position: absolute;
   top: 50%;
-  left: 6px;
-  width: 16px;
-  height: 16px;
-  margin-top: -8px;
+  left: 5px;
+  width: 10px;
+  height: 10px;
+  margin-top: -5px;
   border-radius: 50%;
   background: var(--md-sys-color-outline);
   transition: left .2s, width .2s, height .2s, margin-top .2s, background-color .2s;
@@ -83,15 +83,15 @@ input[role="switch"]:checked {
   background: var(--md-sys-color-primary);
 }
 input[role="switch"]:checked::before {
-  left: 24px;
-  width: 24px;
-  height: 24px;
-  margin-top: -12px;
+  left: 18px;
+  width: 16px;
+  height: 16px;
+  margin-top: -8px;
   background: var(--md-sys-color-on-primary);
 }
-.item:active input[role="switch"]:not(:disabled)::before { width: 28px; height: 28px; margin-top: -14px; }
-.item:active input[role="switch"]:not(:disabled):not(:checked)::before { left: 4px; }
-.item:active input[role="switch"]:not(:disabled):checked::before { left: 22px; }
+.item:active input[role="switch"]:not(:disabled)::before { width: 20px; height: 20px; margin-top: -10px; }
+.item:active input[role="switch"]:not(:disabled):not(:checked)::before { left: 3px; }
+.item:active input[role="switch"]:not(:disabled):checked::before { left: 14px; }
 input[role="switch"]:focus-visible { outline: 3px solid var(--md-sys-color-secondary); outline-offset: 2px; }
 input[role="switch"]:disabled { cursor: default; opacity: .38; }
 
