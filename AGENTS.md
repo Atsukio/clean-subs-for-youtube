@@ -63,6 +63,9 @@ After a code change, reload the extension card and refresh YouTube.
   is switched on and removes them when it is switched off. The service worker mirrors
   `permissions.onAdded/onRemoved` into the `w2g` toggle, because Chrome can close the popup during
   the permission prompt and permissions can be revoked from `chrome://extensions`.
+- Popup grouping: a "YouTube" group (h2) holds a subsection per page (h3, currently "Subscriptions page");
+  new on-YouTube features go in a subsection there, and a separate service gets its own group (h2)
+  after a divider, like Watch2Gether.
 - Adding a feature: add a default to `EFY.DEFAULTS`, a switch in `popup.html` with
   `data-setting`, and gate the behaviour in the content script (see `rysl-f-*` classes in
   `subs-cleaner.js`/`.css` and `setEnabled()` in `w2g/button.js`). It must undo itself cleanly when

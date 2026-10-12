@@ -19,6 +19,13 @@ h2 {
   letter-spacing: .1px;
   color: var(--md-sys-color-primary);
 }
+/* Subsection under a group heading, e.g. "Subscriptions page" under "YouTube" */
+h3 {
+  margin: 8px 0 0 8px;
+  font: var(--md-sys-typescale-label-medium);
+  letter-spacing: .5px;
+  color: var(--md-sys-color-on-surface-variant);
+}
 section { margin: 0; }
 /* M3 divider (outline-variant) between the settings groups */
 section + section { margin-top: 12px; border-top: 1px solid var(--md-sys-color-outline-variant); }
