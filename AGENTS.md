@@ -122,7 +122,8 @@ with **Roboto**.
   (`html.efy-no-shorts:not(.rysl-f-tabs)`), otherwise the Shorts tab would have nothing to show.
 - On `/watch` the W button is a pill in the action row (`ytd-watch-metadata #top-level-buttons-computed`), placed right
   after the Like/Dislike group (adapter: `isWatchPage`, `watchTargetSelector`, `getWatchVideo`), controlled by the
-  `w2gWatchPage` toggle. It takes its colours from YouTube's theme variables (`--yt-spec-*`) so it follows light/dark.
+  `w2gWatchPage` toggle. Its light/dark colours are fixed and chosen by detecting the page theme (`html[dark]`, else background
+  luminance) into `data-theme`; do not rely on `--yt-spec-*` variables, they did not resolve for the button on real YouTube.
   YouTube re-renders that row, so `scan()` re-attaches the pill if it was detached, and `yt-navigate-finish` resets it
   to idle so "Added" does not carry over to the next video. Thumbnails keep the hover overlay variant.
 - The mutation observers are debounced and idle off the relevant pages. Keep it that way: YouTube

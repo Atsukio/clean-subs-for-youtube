@@ -24,15 +24,17 @@
     button[data-state="error"] { outline: 2px solid #c0392b; outline-offset: -2px; }
     button[data-state="loading"] span, button[data-state="added"] span, button[data-state="error"] span { display: inline; }
   `;
-  // Video page: a pill in the action row next to Like / Dislike. It takes its colours from YouTube's own
-  // theme variables (inherited into the shadow root), so it follows light and dark mode by itself.
+  // Video page: a pill in the action row next to Like / Dislike. Colours are fixed per theme (the page's
+  // theme is detected below and set as data-theme on the host); YouTube's own --yt-spec-* variables were
+  // not available to the button on the real page, which left dark mode unreadable.
   const STYLE_PILL = `
     :host { all: initial; display: inline-flex; align-items: center; margin-left: 8px; }
     button { all: initial; box-sizing: border-box; display: inline-flex; align-items: center; gap: 6px;
       height: 36px; padding: 0 16px 0 10px; font: 500 14px/20px Roboto, Arial, sans-serif; white-space: nowrap;
-      color: var(--yt-spec-text-primary, #0f0f0f); background: var(--yt-spec-badge-chip-background, rgba(0,0,0,.05));
-      border-radius: 18px; cursor: pointer; }
-    button:hover { background: var(--yt-spec-mono-tonal-hover, rgba(0,0,0,.1)); }
+      color: #0f0f0f; background: rgba(0,0,0,.05); border-radius: 18px; cursor: pointer; }
+    button:hover { background: rgba(0,0,0,.1); }
+    :host([data-theme="dark"]) button { color: #f1f1f1; background: rgba(255,255,255,.1); }
+    :host([data-theme="dark"]) button:hover { background: rgba(255,255,255,.2); }
     button:not([data-state="idle"]) .plus { display: none; }
     button[data-state="loading"] { opacity: .7; cursor: wait; }
     button[data-state="added"] { box-shadow: inset 0 0 0 2px #2e9d4f; }
@@ -40,6 +42,17 @@
   `;
   const LABELS_THUMB = { idle: '', loading: '…', added: 'Added', error: 'Error' };
   const LABELS_PILL = { idle: 'W2G', loading: '…', added: 'Added', error: 'Error' };
+
+  // Is YouTube in dark mode? Its html[dark] marker first, then the page's actual background colour.
+  function pageIsDark() {
+    if (document.documentElement.hasAttribute('dark')) return true;
+    for (const el of [document.body, document.documentElement]) {
+      const c = (getComputedStyle(el).backgroundColor.match(/[\d.]+/g) || []).map(Number);
+      if (c.length >= 3 && (c.length === 3 || c[3] > 0)) return 0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2] < 128;
+    }
+    return false;
+  }
+  const applyTheme = (host) => { host.dataset.theme = pageIsDark() ? 'dark' : 'light'; };
 
   // variant: 'thumb' (hover overlay on a thumbnail) or 'pill' (video page action row)
   function createButton(target, readVideo, variant) {
@@ -95,7 +108,7 @@
     // Back to idle, e.g. when YouTube moves on to another video without reloading the page
     const reset = () => { clearTimeout(timer); setState('idle'); host.keepVisible = false; };
 
-    if (!pill) root.host.style.display = 'none';
+    if (pill) applyTheme(host); else root.host.style.display = 'none';
     return { host, reset };
   }
 
@@ -155,7 +168,10 @@
       if (bar) {
         const info = injected.get(bar);
         if (!info) inject(bar, 'watch');
-        else if (!info.host.isConnected) placePill(bar, info.host); // YouTube re-rendered the row
+        else {
+          if (!info.host.isConnected) placePill(bar, info.host); // YouTube re-rendered the row
+          applyTheme(info.host); // the user may have switched YouTube's theme
+        }
       }
     } else {
       removeKind('watch');
