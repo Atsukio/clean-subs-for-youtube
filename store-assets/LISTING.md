@@ -44,15 +44,15 @@ ALL YOUTUBE PAGES
 WATCH2GETHER (off by default)
 • Hover a video thumbnail, or the player on a video page, and click the W button to add that video to your Watch2Gether room's playlist
 • Save several rooms and switch between them from the popup
+• Needs your own Watch2Gether API key and room. Chrome asks for access to w2g.tv only when you turn this on, and it is handed back when you turn it off
 
 SETTINGS
 • Pause all features with one switch
 • Export your settings as a short code and import a friend's
-• Needs your own Watch2Gether API key and room. Chrome asks for access to w2g.tv only when you turn this on, and it is handed back when you turn it off
 
 PRIVACY
 • Nothing is sent to the developer, and there is no analytics
-• The Subscriptions page features run entirely in your browser
+• The YouTube features (tabs, filters, hiding Shorts) run entirely in your browser
 • The Watch2Gether feature sends the video link, title and thumbnail, plus your API key, to Watch2Gether only when you click the button
 • Your API key stays in local extension storage and is never synced
 
@@ -64,16 +64,18 @@ GOOD TO KNOW
 
 ## Privacy tab
 
-- **Single purpose:** Improve YouTube browsing by tidying the Subscriptions page and letting the
-  user add videos to their own Watch2Gether room. Every feature is optional.
+- **Single purpose:** Improve YouTube browsing: tidy and filter the Subscriptions page, hide Shorts, and
+  let the user add videos to their own Watch2Gether room. Every feature is optional and can be switched
+  off.
 - **Privacy policy URL:** https://github.com/Atsukio/clean-subs-for-youtube/blob/main/PRIVACY.md
 
 ### Permission justifications
 
-- **storage:** Saves the user's feature toggles (chrome.storage.sync) and, for the optional
-  Watch2Gether feature, the user's own API key and room (chrome.storage.local, never synced).
-- **Host access to www.youtube.com (content scripts):** Needed to tidy the Subscriptions page and
-  to add the Watch2Gether button to video thumbnails on YouTube.
+- **storage:** Saves the user's feature toggles and filter lists (chrome.storage.sync) and, for the
+  optional Watch2Gether feature, the user's own API key and saved rooms (chrome.storage.local, never
+  synced).
+- **Host access to www.youtube.com (content scripts):** Needed to tidy and filter the Subscriptions
+  page, hide Shorts, and add the Watch2Gether button to video thumbnails and the video player.
 - **Optional host access to api.w2g.tv and w2g.tv:** Requested only when the user turns on the
   Watch2Gether feature. Used to add the chosen video to the user's room and to test the connection.
 - **Optional host access to www.youtube.com/oembed:** Same optional request. Used only to look up a
