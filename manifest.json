@@ -27,7 +27,7 @@
     {
       "matches": ["https://www.youtube.com/*"],
       "js": ["lib/settings.js", "content/subs-cleaner.js"],
-      "css": ["content/subs-cleaner.css"],
+      "css": ["content/theme.css", "content/subs-cleaner.css"],
       "run_at": "document_start"
     },
     {

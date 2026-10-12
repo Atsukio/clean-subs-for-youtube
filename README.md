@@ -54,8 +54,12 @@ for tooling.
 ```sh
 npm install
 npm run lint      # ESLint
+npm run assets    # regenerate the Material 3 theme and bundled Roboto font files
 npm run package   # builds dist/everything-for-youtube-<version>.zip for the Web Store
 ```
+
+The UI follows Material Design 3 with Roboto, bundled locally. See [AGENTS.md](AGENTS.md)
+for the project's conventions and decisions.
 
 ```text
 manifest.json

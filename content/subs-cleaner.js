@@ -92,8 +92,10 @@
     bar.id = "rysl-tabs";
     bar.setAttribute("role", "tablist");
     bar.innerHTML =
+      '<div class="rysl-seg">' +
       '<button type="button" role="tab" data-mode="videos">Videos</button>' +
       '<button type="button" role="tab" data-mode="shorts">Shorts</button>' +
+      "</div>" +
       '<span class="rysl-note">No Shorts loaded here. ' +
       '<a href="/feed/subscriptions/shorts">Open all subscription Shorts</a></span>' +
       '<span class="rysl-slot"></span>';

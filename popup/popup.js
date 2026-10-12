@@ -29,10 +29,13 @@ function say(msg, kind = '') {
 
 async function renderRoom() {
   const { apiKey, streamkey } = await chrome.storage.local.get(['apiKey', 'streamkey']);
-  $('room').textContent = streamkey ? `Active room: ${streamkey}` : 'No room configured.';
   $('room-input').value = streamkey || '';
+  $('room-help').textContent = streamkey ? `Active room: ${streamkey}` : 'No room configured.';
   // The key is never shown back; blank means "keep the saved one".
-  $('apiKey').placeholder = apiKey ? '•••••• saved (leave blank to keep)' : 'Paste your API key';
+  $('apiKey').placeholder = apiKey ? '•••••• saved' : ' ';
+  $('apiKey-help').textContent = apiKey
+    ? 'A key is saved. Leave blank to keep it.'
+    : 'From your Watch2Gether account\'s API page.';
 }
 
 function renderToggles(settings) {

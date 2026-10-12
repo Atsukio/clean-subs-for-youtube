@@ -47,29 +47,20 @@ html.rysl-mode-shorts ytd-reel-shelf-renderer #right-arrow {
   display: none !important;
 }
 
-/* ---------- Tab bar ---------- */
-/* Colours follow YouTube's own theme: html[dark] is set when YouTube is in dark mode */
+/* ---------- Tab bar (Material Design 3 segmented button) ---------- */
+/* Colour roles, shapes and type come from theme.css. Only the bar's background,
+   text and divider follow YouTube's own theme (html[dark]) so it blends into the page. */
 #rysl-tabs {
   --rysl-bg: #ffffff;
   --rysl-text: #0f0f0f;
   --rysl-text-secondary: #606060;
-  --rysl-chip: rgba(0, 0, 0, 0.05);
-  --rysl-chip-hover: rgba(0, 0, 0, 0.1);
-  --rysl-active-bg: #0f0f0f;
-  --rysl-active-text: #ffffff;
   --rysl-border: rgba(0, 0, 0, 0.1);
-  --rysl-link: #065fd4;
 }
 html[dark] #rysl-tabs {
   --rysl-bg: #0f0f0f;
   --rysl-text: #f1f1f1;
   --rysl-text-secondary: #aaaaaa;
-  --rysl-chip: rgba(255, 255, 255, 0.1);
-  --rysl-chip-hover: rgba(255, 255, 255, 0.2);
-  --rysl-active-bg: #f1f1f1;
-  --rysl-active-text: #0f0f0f;
   --rysl-border: rgba(255, 255, 255, 0.1);
-  --rysl-link: #3ea6ff;
 }
 #rysl-tabs {
   position: sticky;
@@ -77,41 +68,75 @@ html[dark] #rysl-tabs {
   z-index: 1000;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 16px;
   width: 100%;
   box-sizing: border-box;
   margin: 0 0 16px;
   padding: 12px 8px;
   background: var(--rysl-bg);
   border-bottom: 1px solid var(--rysl-border);
-  font-family: "Roboto", "Arial", sans-serif;
+  font-family: var(--md-ref-typeface);
   grid-column: 1 / -1;
 }
-#rysl-tabs button {
-  font: inherit;
-  font-size: 16px;
-  font-weight: 500;
-  line-height: 36px;
+
+/* Segmented button: 40dp high, full-rounded outline, selected segment uses the secondary container */
+#rysl-tabs .rysl-seg {
+  display: inline-flex;
+  height: 40px;
+  border: 1px solid var(--md-sys-color-outline);
+  border-radius: var(--md-sys-shape-full);
+  overflow: hidden;
+}
+#rysl-tabs .rysl-seg button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 96px;
+  height: 100%;
   padding: 0 16px;
   border: 0;
-  border-radius: 8px;
+  font: var(--md-sys-typescale-label-large);
+  letter-spacing: .1px;
   cursor: pointer;
   color: var(--rysl-text);
-  background: var(--rysl-chip);
-  transition: background-color 0.15s;
+  background: transparent;
 }
-#rysl-tabs button:hover { background: var(--rysl-chip-hover); }
-#rysl-tabs button.rysl-active {
-  color: var(--rysl-active-text);
-  background: var(--rysl-active-bg);
+#rysl-tabs .rysl-seg button + button { border-left: 1px solid var(--md-sys-color-outline); }
+#rysl-tabs .rysl-seg button::after {          /* state layer */
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: currentColor;
+  opacity: 0;
+  transition: opacity 0.15s;
+  pointer-events: none;
 }
+#rysl-tabs .rysl-seg button:hover::after { opacity: var(--md-sys-state-hover); }
+#rysl-tabs .rysl-seg button:focus-visible::after { opacity: var(--md-sys-state-focus); }
+#rysl-tabs .rysl-seg button:active::after { opacity: var(--md-sys-state-pressed); }
+#rysl-tabs .rysl-seg button:focus-visible { outline: 3px solid var(--md-sys-color-secondary); outline-offset: -3px; }
+#rysl-tabs .rysl-seg button.rysl-active {
+  color: var(--md-sys-color-on-secondary-container);
+  background: var(--md-sys-color-secondary-container);
+}
+#rysl-tabs .rysl-seg button.rysl-active::before {   /* check mark on the selected segment */
+  content: "";
+  width: 18px;
+  height: 18px;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
 #rysl-tabs .rysl-note {
   display: none;
-  margin-left: 8px;
-  font-size: 14px;
+  font: var(--md-sys-typescale-body-medium);
+  letter-spacing: .25px;
   color: var(--rysl-text-secondary);
 }
-#rysl-tabs .rysl-note a { color: var(--rysl-link); }
+#rysl-tabs .rysl-note a { color: var(--md-sys-color-primary); }
 #rysl-tabs.rysl-empty .rysl-note { display: inline; }
 
 /* Right-hand side of the row: YouTube's "All subscriptions" control */
@@ -123,4 +148,8 @@ html[dark] #rysl-tabs {
 #rysl-tabs .rysl-slot > .rysl-moved {
   display: inline-flex !important;
   margin: 0 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #rysl-tabs .rysl-seg button::after { transition: none; }
 }

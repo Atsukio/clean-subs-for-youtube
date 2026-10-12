@@ -5,10 +5,13 @@
   "description": "Dev tooling for the Everything for YouTube Chrome extension",
   "scripts": {
     "lint": "eslint .",
+    "assets": "node scripts/build-assets.mjs",
     "package": "node scripts/package.js"
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",
+    "@fontsource/roboto": "^5.3.0",
+    "@material/material-color-utilities": "^0.3.0",
     "eslint": "^9.0.0",
     "globals": "^15.0.0"
   }

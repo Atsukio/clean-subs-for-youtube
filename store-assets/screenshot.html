@@ -4,6 +4,7 @@
 <html dark>
 <head>
 <meta charset="utf-8">
+<link rel="stylesheet" href="../content/theme.css">
 <link rel="stylesheet" href="../content/subs-cleaner.css">
 <style>
   html, body { margin: 0; width: 1280px; height: 800px; overflow: hidden; background: #0f0f0f; color: #f1f1f1; font-family: Roboto, Arial, sans-serif; }
@@ -35,8 +36,10 @@
   <div class="side"><div>Home</div><div>Shorts</div><div class="on">Subscriptions</div><div>History</div><div>Playlists</div><div>Watch later</div><div>Liked videos</div></div>
   <div class="main">
     <div id="rysl-tabs" role="tablist">
-      <button type="button" role="tab" class="rysl-active" aria-selected="true">Videos</button>
-      <button type="button" role="tab" aria-selected="false">Shorts</button>
+      <div class="rysl-seg">
+        <button type="button" role="tab" class="rysl-active" aria-selected="true">Videos</button>
+        <button type="button" role="tab" aria-selected="false">Shorts</button>
+      </div>
       <span class="rysl-slot"><span class="rysl-moved pill">All subscriptions</span></span>
     </div>
     <div class="grid" id="g"></div>

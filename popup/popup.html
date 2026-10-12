@@ -2,42 +2,62 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Everything for YouTube</title>
   <meta name="color-scheme" content="light dark">
+  <title>Everything for YouTube</title>
+  <link rel="stylesheet" href="theme.css">
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
   <h1>Everything for YouTube</h1>
 
-  <section>
-    <h2>Subscriptions page</h2>
-    <label class="toggle"><input type="checkbox" data-setting="hideMostRelevant">
-      <span>Hide "Most relevant" and extra shelves</span></label>
-    <label class="toggle"><input type="checkbox" data-setting="tabs">
-      <span>Videos | Shorts tabs</span></label>
-    <label class="toggle sub"><input type="checkbox" data-setting="allSubsInRow">
-      <span>Keep "All subscriptions" on the tab row</span></label>
+  <section aria-labelledby="h-subs">
+    <h2 id="h-subs">Subscriptions page</h2>
+    <label class="item">
+      <span class="text">Hide "Most relevant" and extra shelves</span>
+      <input type="checkbox" role="switch" data-setting="hideMostRelevant">
+    </label>
+    <label class="item">
+      <span class="text">Videos | Shorts tabs</span>
+      <input type="checkbox" role="switch" data-setting="tabs">
+    </label>
+    <label class="item nested">
+      <span class="text">Keep "All subscriptions" on the tab row</span>
+      <input type="checkbox" role="switch" data-setting="allSubsInRow">
+    </label>
   </section>
 
-  <section>
-    <h2>Watch2Gether</h2>
-    <label class="toggle"><input type="checkbox" data-setting="w2g">
-      <span>Add-to-W2G button on video thumbnails</span></label>
-    <p class="muted" id="w2g-hint">Turning this on asks Chrome for access to w2g.tv.</p>
+  <section aria-labelledby="h-w2g">
+    <h2 id="h-w2g">Watch2Gether</h2>
+    <label class="item">
+      <span class="text">
+        Add-to-W2G button on thumbnails
+        <span class="support" id="w2g-hint">Turning this on asks Chrome for access to w2g.tv.</span>
+      </span>
+      <input type="checkbox" role="switch" data-setting="w2g">
+    </label>
 
     <div id="w2g-config" hidden>
-      <p id="room" class="room"></p>
-      <label>W2G API key
-        <input id="apiKey" type="password" autocomplete="off" spellcheck="false">
-      </label>
-      <label>Room streamkey or URL
-        <input id="room-input" type="text" placeholder="https://w2g.tv/rooms/…" spellcheck="false">
-      </label>
-      <div class="row">
-        <button id="save">Save</button>
-        <button id="test" class="secondary">Test connection</button>
+      <div class="field-wrap">
+        <label class="field">
+          <input id="apiKey" type="password" autocomplete="off" spellcheck="false" placeholder=" ">
+          <span class="label">W2G API key</span>
+        </label>
+        <p class="support" id="apiKey-help"></p>
       </div>
-      <button id="forget" class="link">Forget saved key and room</button>
+      <div class="field-wrap">
+        <label class="field">
+          <input id="room-input" type="text" spellcheck="false" placeholder=" ">
+          <span class="label">Room streamkey or URL</span>
+        </label>
+        <p class="support" id="room-help"></p>
+      </div>
+
+      <div class="actions">
+        <button id="forget" class="text danger" type="button">Forget</button>
+        <span class="spacer"></span>
+        <button id="test" class="tonal" type="button">Test connection</button>
+        <button id="save" class="filled" type="button">Save</button>
+      </div>
     </div>
   </section>
 
