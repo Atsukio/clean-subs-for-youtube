@@ -23,7 +23,7 @@ no promise that every request will be added.
 
 ## Watch2Gether
 
-- Hover a video thumbnail, or the player on a video page, and click the **W** button to add that video to your Watch2Gether room's playlist (off by default, see below)
+- Hover a video thumbnail and click the **W** button, or use the **W2G** button next to Like and Dislike on a video page, to add that video to your Watch2Gether room's playlist (off by default, see below)
 - Save several rooms and switch the active one from the popup, or open the room in a new tab
 
 ## Settings

@@ -16,11 +16,12 @@ Values to enter in the Chrome Web Store developer dashboard. Keep in sync with `
 - **Category:** Productivity
 - **Language:** English
 - **Icon (128x128):** `store-assets/webstore-icon.png`
-- **Screenshots (1280x800, upload in this order):**
+- **Screenshots (1280x800, upload in this order; the store allows up to 5):**
   1. `store-assets/screenshots/01-subscriptions.png`: Videos | Shorts tabs on the Subscriptions page
-  2. `store-assets/screenshots/02-watch2gether.png`: the W button on thumbnails (idle and added)
-  3. `store-assets/screenshots/03-settings.png`: the settings popup (YouTube options)
-  4. `store-assets/screenshots/04-settings-watch2gether.png`: the Watch2Gether settings
+  2. `store-assets/screenshots/02-watch2gether-thumbnails.png`: the W button on thumbnails (idle and added)
+  3. `store-assets/screenshots/03-watch2gether-video-page.png`: the W2G button next to Like and Dislike
+  4. `store-assets/screenshots/04-settings.png`: the settings popup (YouTube options)
+  5. `store-assets/screenshots/05-settings-watch2gether.png`: the Watch2Gether settings
 
   They are illustrations with placeholder content (regenerate with `npm run screenshots`); replace with
   real captures if they can be taken without personal data.
@@ -42,7 +43,7 @@ ALL YOUTUBE PAGES
 • Hide Shorts everywhere: Home, search, related videos and the sidebar (off by default)
 
 WATCH2GETHER (off by default)
-• Hover a video thumbnail, or the player on a video page, and click the W button to add that video to your Watch2Gether room's playlist
+• Hover a video thumbnail and click the W button, or use the W2G button next to Like and Dislike on a video page, to add that video to your Watch2Gether room's playlist
 • Save several rooms and switch between them from the popup
 • Needs your own Watch2Gether API key and room. Chrome asks for access to w2g.tv only when you turn this on, and it is handed back when you turn it off
 
@@ -75,7 +76,7 @@ GOOD TO KNOW
   optional Watch2Gether feature, the user's own API key and saved rooms (chrome.storage.local, never
   synced).
 - **Host access to www.youtube.com (content scripts):** Needed to tidy and filter the Subscriptions
-  page, hide Shorts, and add the Watch2Gether button to video thumbnails and the video player.
+  page, hide Shorts, and add the Watch2Gether button to video thumbnails and next to Like and Dislike on the video page.
 - **Optional host access to api.w2g.tv and w2g.tv:** Requested only when the user turns on the
   Watch2Gether feature. Used to add the chosen video to the user's room and to test the connection.
 - **Optional host access to www.youtube.com/oembed:** Same optional request. Used only to look up a

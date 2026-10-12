@@ -1,6 +1,6 @@
 <!doctype html>
 <!-- Source for the Web Store screenshots (illustrations with placeholder content; they use the real
-     ../content/*.css). One page, four scenes chosen by the URL hash: #subs, #w2g, #settings, #settings-w2g.
+     ../content/*.css). One page, five scenes chosen by the URL hash: #subs, #w2g, #watch, #settings, #settings-w2g.
      Build all three with:  npm run screenshots  -->
 <html dark>
 <head>
@@ -41,6 +41,26 @@
   .w2g.added .txt { display: inline; }
   .tip { position: absolute; top: 40px; left: 8px; padding: 4px 8px; border-radius: 4px; background: #717171; color: #fff; font-size: 12px; }
 
+  /* Video page scene: the real W2G pill styles (content/w2g/button.js STYLE_PILL) in a YouTube-like action row */
+  html { --yt-spec-text-primary: #f1f1f1; --yt-spec-badge-chip-background: rgba(255,255,255,.1); }
+  .watch { display: none; width: 800px; padding-left: 8px; }
+  .player { height: 450px; border-radius: 12px; background: linear-gradient(135deg, hsl(220 35% 24%), hsl(260 35% 14%)); position: relative; }
+  .player .play { position: absolute; left: 50%; top: 50%; width: 72px; height: 50px; margin: -25px 0 0 -36px; border-radius: 14px; background: rgba(255,255,255,.14); }
+  .player .play::after { content: ""; position: absolute; left: 29px; top: 14px; border-left: 18px solid #f1f1f1; border-top: 11px solid transparent; border-bottom: 11px solid transparent; }
+  .vt { margin: 14px 0 0; font-size: 20px; font-weight: 600; }
+  .arow { display: flex; align-items: center; margin-top: 12px; }
+  .chan { display: flex; align-items: center; gap: 12px; }
+  .chan .ch { width: 40px; height: 40px; }
+  .chan .bar { margin: 0 0 6px; width: 110px; } .chan .bar + .bar { width: 70px; margin: 0; }
+  .sub { margin-left: 6px; height: 36px; line-height: 36px; padding: 0 16px; border-radius: 18px; background: #f1f1f1; color: #0f0f0f; font-size: 14px; font-weight: 500; }
+  .gap { flex: 1; }
+  .pillrow { display: flex; align-items: center; }
+  .ypill { display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border-radius: 18px; margin-left: 8px; font: 500 14px/20px Roboto, Arial, sans-serif; background: var(--yt-spec-badge-chip-background); color: var(--yt-spec-text-primary); }
+  .ypill.first { margin-left: 0; }
+  .w2gpill { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 16px 0 10px; margin-left: 8px; border-radius: 18px; font: 500 14px/20px Roboto, Arial, sans-serif; background: var(--yt-spec-badge-chip-background); color: var(--yt-spec-text-primary); }
+  [data-scene="watch"] .watch { display: block; }
+  [data-scene="watch"] .grid, [data-scene="watch"] #rysl-tabs { display: none; }
+
   /* Scenes */
   [data-scene="w2g"] .grid, [data-scene^="settings"] .grid { margin-top: 12px; }
   [data-scene="w2g"] #rysl-tabs, [data-scene^="settings"] #rysl-tabs { display: none; }
@@ -62,6 +82,20 @@
       </div>
       <span class="rysl-slot"><span class="rysl-moved pill">All subscriptions</span></span>
     </div>
+    <div class="watch">
+      <div class="player"><div class="play"></div></div>
+      <div class="vt">Example video title</div>
+      <div class="arow">
+        <div class="chan"><div class="ch"></div><div><div class="bar"></div><div class="bar"></div></div><div class="sub">Subscribe</div></div>
+        <div class="gap"></div>
+        <div class="pillrow">
+          <div class="ypill first">Like 12K &nbsp;|&nbsp; Dislike</div>
+          <div class="w2gpill" id="w2gpill"></div>
+          <div class="ypill">Share</div>
+          <div class="ypill">Download</div>
+        </div>
+      </div>
+    </div>
     <div class="grid" id="g"></div>
   </div>
 </div>
@@ -80,6 +114,7 @@
   const ICON = `<svg viewBox="0 0 36 24" width="30" height="20" fill="none" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <path class="plus" d="M6 7.5v9M1.5 12h9" stroke="#fff" stroke-width="2.6"/>
     <g transform="translate(12 0)"><path d="M3 5l4.5 14L12 9" stroke="#FDBD00"/><path d="M12 9l4.5 10L21 5" stroke="#E8EDF4"/></g></svg>`;
+  document.getElementById("w2gpill").innerHTML = ICON.replace(/#fff/g, "currentColor").replace('stroke="#E8EDF4"', 'stroke="currentColor"') + "W2G";
   const hues = [200, 340, 140, 30, 260, 180, 50, 310];
   const g = document.getElementById("g");
   for (let i = 0; i < 12; i++) {

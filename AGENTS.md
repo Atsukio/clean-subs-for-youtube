@@ -120,8 +120,11 @@ with **Roboto**.
   never filtered by length. Title/keyword matching is substring, channel matching is an exact (case-insensitive) name.
 - "Hide Shorts everywhere" is CSS-only and steps aside on the Subscriptions page while the tabs are on
   (`html.efy-no-shorts:not(.rysl-f-tabs)`), otherwise the Shorts tab would have nothing to show.
-- The W button also attaches to `#movie_player` on `/watch` (adapter: `isWatchPage`, `watchTargetSelector`,
-  `getWatchVideo`), controlled by the `w2gWatchPage` toggle.
+- On `/watch` the W button is a pill in the action row (`ytd-watch-metadata #top-level-buttons-computed`), placed right
+  after the Like/Dislike group (adapter: `isWatchPage`, `watchTargetSelector`, `getWatchVideo`), controlled by the
+  `w2gWatchPage` toggle. It takes its colours from YouTube's theme variables (`--yt-spec-*`) so it follows light/dark.
+  YouTube re-renders that row, so `scan()` re-attaches the pill if it was detached, and `yt-navigate-finish` resets it
+  to idle so "Added" does not carry over to the next video. Thumbnails keep the hover overlay variant.
 - The mutation observers are debounced and idle off the relevant pages. Keep it that way: YouTube
   mutates the DOM constantly.
 - The `All subscriptions` control is *moved* into the tab bar, so removing the bar must put it back
@@ -136,8 +139,8 @@ with **Roboto**.
   are justified as one purpose, so keep the description consistent).
 - Privacy policy URL: `https://github.com/Atsukio/clean-subs-for-youtube/blob/main/PRIVACY.md`.
   Update `PRIVACY.md` (and its effective date) whenever data handling changes.
-- Screenshots are 1280x800 24-bit PNGs in `store-assets/screenshots/` (subscriptions, watch2gether,
-  settings). `npm run screenshots` renders them from `store-assets/screenshot.html` (scenes by URL hash) using
+- Screenshots are 1280x800 24-bit PNGs in `store-assets/screenshots/` (subscriptions, watch2gether thumbnails,
+  watch2gether video page, settings, settings-watch2gether). `npm run screenshots` renders them from `store-assets/screenshot.html` (scenes by URL hash) using
   the real CSS and a popup preview generated from `popup/popup.html` (git-ignored). Re-run it after any UI
   change. They are clearly labelled illustrations with placeholder content; prefer real captures if they can be
   taken without personal data.

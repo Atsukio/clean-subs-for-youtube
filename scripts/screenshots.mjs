@@ -53,9 +53,10 @@ fs.mkdirSync(outDir, { recursive: true });
 const page = pathToFileURL(path.join(assets, "screenshot.html")).href;
 const scenes = [
   ["subs", "01-subscriptions.png"],
-  ["w2g", "02-watch2gether.png"],
-  ["settings", "03-settings.png"],
-  ["settings-w2g", "04-settings-watch2gether.png"],
+  ["w2g", "02-watch2gether-thumbnails.png"],
+  ["watch", "03-watch2gether-video-page.png"],
+  ["settings", "04-settings.png"],
+  ["settings-w2g", "05-settings-watch2gether.png"],
 ];
 for (const [scene, file] of scenes) {
   execFileSync(

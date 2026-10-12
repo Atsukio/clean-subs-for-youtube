@@ -9,9 +9,9 @@
   // Preview thumbnails only (old + new renderers), not the watch-page or Shorts players.
   targetSelector: 'ytd-thumbnail, yt-thumbnail-view-model',
 
-  // The video page itself: the button sits on the player and adds the video being watched.
+  // The video page: a pill button in the action row, next to Like / Dislike, adds the video being watched.
   isWatchPage: (loc) => loc.pathname === '/watch',
-  watchTargetSelector: '#movie_player',
+  watchTargetSelector: 'ytd-watch-metadata #top-level-buttons-computed',
   getWatchVideo() {
     const title = document.querySelector('ytd-watch-metadata h1')?.textContent || document.title.replace(/ - YouTube$/, '');
     return { url: location.href, title: clean(title) };

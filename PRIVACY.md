@@ -2,7 +2,7 @@
 
 Effective date: October 13, 2026
 
-Everything for YouTube adds optional features to YouTube in your browser: a cleaner Subscriptions page, filters for videos and Shorts, and an "add to Watch2Gether" button on video thumbnails and the video player. Each feature can be switched on or off in the extension's popup. This policy describes the information the extension handles.
+Everything for YouTube adds optional features to YouTube in your browser: a cleaner Subscriptions page, filters for videos and Shorts, and an "add to Watch2Gether" button on video thumbnails and on the video page. Each feature can be switched on or off in the extension's popup. This policy describes the information the extension handles.
 
 ## Subscriptions page features
 
