@@ -1,9 +1,11 @@
 <!doctype html>
-<!-- Source for screenshot-1280x800.png (illustration with placeholder content, uses the real ../content/subs-cleaner.css).
-     Render: msedge/chrome --headless --allow-file-access-from-files --hide-scrollbars --window-size=1280,800 --screenshot=screenshot-1280x800.png screenshot.html -->
+<!-- Source for the Web Store screenshots (illustrations with placeholder content; they use the real
+     ../content/*.css). One page, three scenes chosen by the URL hash: #subs, #w2g, #settings.
+     Build all three with:  npm run screenshots  -->
 <html dark>
 <head>
 <meta charset="utf-8">
+<title>Store screenshot</title>
 <link rel="stylesheet" href="../content/theme.css">
 <link rel="stylesheet" href="../content/subs-cleaner.css">
 <style>
@@ -21,19 +23,37 @@
   .main { flex: 1; padding: 0 24px 0 0; }
   .main > #rysl-tabs { margin-top: 0; }
   .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px 16px; }
-  .thumb { aspect-ratio: 16/9; border-radius: 12px; }
+  .card { position: relative; }
+  .thumb { position: relative; aspect-ratio: 16/9; border-radius: 12px; }
   .row { display: flex; gap: 12px; margin-top: 12px; }
   .ch { width: 36px; height: 36px; border-radius: 50%; background: #3a3a3a; flex: none; }
   .bar { height: 12px; border-radius: 6px; background: #3a3a3a; margin-bottom: 8px; }
   .meta .bar:first-child { width: 92%; height: 14px; }
   .meta .bar:nth-child(2) { width: 60%; }
   .meta .bar:nth-child(3) { width: 45%; }
+
+  /* W2G thumbnail button: mirrors the styles and icon in content/w2g/button.js */
+  .w2g { position: absolute; top: 8px; left: 8px; display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 6px;
+    font: 500 12px/1 Roboto, Arial, sans-serif; color: #fff; background: rgba(0,0,0,.6); border-radius: 4px; }
+  .w2g .txt { display: none; padding-right: 4px; }
+  .w2g.added { outline: 2px solid #2e9d4f; outline-offset: -2px; }
+  .w2g.added .plus { display: none; }
+  .w2g.added .txt { display: inline; }
+  .tip { position: absolute; top: 40px; left: 8px; padding: 4px 8px; border-radius: 4px; background: #717171; color: #fff; font-size: 12px; }
+
+  /* Scenes */
+  [data-scene="w2g"] .grid, [data-scene="settings"] .grid { margin-top: 12px; }
+  [data-scene="w2g"] #rysl-tabs, [data-scene="settings"] #rysl-tabs { display: none; }
+  [data-scene="subs"] .w2g, [data-scene="subs"] .tip, [data-scene="settings"] .w2g, [data-scene="settings"] .tip { display: none; }
+  .popup { display: none; }
+  [data-scene="settings"] .scrim { position: absolute; inset: 0; background: rgba(0,0,0,.45); }
+  [data-scene="settings"] .popup { display: block; position: absolute; top: 60px; right: 16px; width: 360px; height: 690px; border: 0; border-radius: 12px; box-shadow: 0 8px 28px rgba(0,0,0,.6); }
 </style>
 </head>
 <body>
-<div class="mast"><div class="burger"></div><div class="logo">Subscriptions</div><div class="search">Search</div><div class="pill">+ Create</div><div class="avatar"></div></div>
+<div class="mast"><div class="burger"></div><div class="logo" id="logo">Subscriptions</div><div class="search">Search</div><div class="pill">+ Create</div><div class="avatar"></div></div>
 <div class="layout">
-  <div class="side"><div>Home</div><div>Shorts</div><div class="on">Subscriptions</div><div>History</div><div>Playlists</div><div>Watch later</div><div>Liked videos</div></div>
+  <div class="side" id="side"><div>Home</div><div>Shorts</div><div>Subscriptions</div><div>History</div><div>Playlists</div><div>Watch later</div><div>Liked videos</div></div>
   <div class="main">
     <div id="rysl-tabs" role="tablist">
       <div class="rysl-seg">
@@ -45,13 +65,28 @@
     <div class="grid" id="g"></div>
   </div>
 </div>
+<div class="scrim"></div>
+<iframe class="popup" src="popup-preview.html" title="Extension popup"></iframe>
 <script>
+  const scene = (location.hash || "#subs").slice(1);
+  document.documentElement.dataset.scene = scene;
+  // Highlight the matching sidebar entry and title for the scene
+  const active = scene === "subs" ? 2 : 0;
+  document.getElementById("side").children[active].className = "on";
+  document.getElementById("logo").textContent = scene === "subs" ? "Subscriptions" : "Home";
+
+  const ICON = `<svg viewBox="0 0 36 24" width="30" height="20" fill="none" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path class="plus" d="M6 7.5v9M1.5 12h9" stroke="#fff" stroke-width="2.6"/>
+    <g transform="translate(12 0)"><path d="M3 5l4.5 14L12 9" stroke="#FDBD00"/><path d="M12 9l4.5 10L21 5" stroke="#E8EDF4"/></g></svg>`;
   const hues = [200, 340, 140, 30, 260, 180, 50, 310];
   const g = document.getElementById("g");
   for (let i = 0; i < 12; i++) {
     const h = hues[i % hues.length];
+    // In the W2G scene the first card is hovered (idle button + tooltip) and the second shows the "Added" state
+    const overlay = i === 0 ? `<div class="w2g">${ICON}<span class="txt"></span></div><div class="tip">Add to W2G</div>`
+      : i === 1 ? `<div class="w2g added">${ICON}<span class="txt">Added</span></div>` : "";
     g.insertAdjacentHTML("beforeend",
-      `<div><div class="thumb" style="background:linear-gradient(135deg,hsl(${h} 35% 28%),hsl(${(h + 40) % 360} 35% 18%))"></div>
+      `<div class="card"><div class="thumb" style="background:linear-gradient(135deg,hsl(${h} 35% 28%),hsl(${(h + 40) % 360} 35% 18%))">${overlay}</div>
        <div class="row"><div class="ch"></div><div class="meta" style="flex:1"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div></div></div>`);
   }
 </script>

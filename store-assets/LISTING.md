@@ -16,8 +16,13 @@ Values to enter in the Chrome Web Store developer dashboard. Keep in sync with `
 - **Category:** Productivity
 - **Language:** English
 - **Icon (128x128):** `store-assets/webstore-icon.png`
-- **Screenshots (1280x800):** `store-assets/screenshot-1280x800.png` (illustration with placeholder
-  content; replace with a real capture if one can be taken without personal data)
+- **Screenshots (1280x800, upload in this order):**
+  1. `store-assets/screenshots/01-subscriptions.png`: Videos | Shorts tabs on the Subscriptions page
+  2. `store-assets/screenshots/02-watch2gether.png`: the W button on thumbnails (idle and added)
+  3. `store-assets/screenshots/03-settings.png`: the settings popup
+
+  They are illustrations with placeholder content (regenerate with `npm run screenshots`); replace with
+  real captures if they can be taken without personal data.
 - **Homepage / support URL:** https://github.com/Atsukio/clean-subs-for-youtube
   (issues: https://github.com/Atsukio/clean-subs-for-youtube/issues)
 

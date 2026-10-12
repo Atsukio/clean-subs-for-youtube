@@ -47,6 +47,7 @@ dist/                    build output, git-ignored
 npm install
 npm run lint       # ESLint over everything
 npm run assets     # regenerate popup/theme.css, content/theme.css, popup/fonts/
+npm run screenshots  # re-render store-assets/screenshots/*.png (needs Edge or Chrome)
 npm run package    # dist/everything-for-youtube-<version>.zip (what gets uploaded)
 ```
 
@@ -116,9 +117,11 @@ with **Roboto**.
   are justified as one purpose, so keep the description consistent).
 - Privacy policy URL: `https://github.com/Atsukio/clean-subs-for-youtube/blob/main/PRIVACY.md`.
   Update `PRIVACY.md` (and its effective date) whenever data handling changes.
-- Screenshots are 1280x800 24-bit PNG. `store-assets/screenshot.html` is the source; it uses the real
-  `content/theme.css` and `content/subs-cleaner.css`. It is a clearly labelled illustration with
-  placeholder content (README says so). Prefer a real capture if one can be taken without personal data.
+- Screenshots are 1280x800 24-bit PNGs in `store-assets/screenshots/` (subscriptions, watch2gether,
+  settings). `npm run screenshots` renders them from `store-assets/screenshot.html` (scenes by URL hash) using
+  the real CSS and a popup preview generated from `popup/popup.html` (git-ignored). Re-run it after any UI
+  change. They are clearly labelled illustrations with placeholder content; prefer real captures if they can be
+  taken without personal data.
 - Release: bump `version` in `manifest.json` and `package.json`, `npm run lint`, `npm run package`,
   upload the zip from `dist/`.
 

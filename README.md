@@ -20,7 +20,7 @@ no promise that every request will be added.
 
 - Hover a video thumbnail and click the **W** button to add that video to your Watch2Gether room's playlist (off by default, see below)
 
-![Illustration of the Videos and Shorts tabs on the Subscriptions page](store-assets/screenshot-1280x800.png)
+![Illustration of the Videos and Shorts tabs on the Subscriptions page](store-assets/screenshots/01-subscriptions.png)
 
 *Illustration with placeholder content, not a capture of a real account.*
 
