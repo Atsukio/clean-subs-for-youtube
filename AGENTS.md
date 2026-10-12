@@ -40,7 +40,7 @@ popup/                   settings popup (popup.html/css/js)
 lib/settings.js          feature toggles shared by content scripts and popup (globalThis.EFY)
 lib/ids.js               YouTube URL -> canonical id (service worker only)
 icons/                   16/48/128 extension icons (generated, see Icon)
-store-assets/            Web Store icon, screenshot + HTML source, LISTING.md (dashboard values)
+store-assets/            Web Store icon, screenshots, promo tiles (+ their HTML sources), LISTING.md (dashboard values)
 scripts/                 package.js (zip), build-assets.mjs (theme + fonts)
 PRIVACY.md               privacy policy; its GitHub URL is entered in the Web Store listing
 dist/                    build output, git-ignored
@@ -52,7 +52,7 @@ dist/                    build output, git-ignored
 npm install
 npm run lint       # ESLint over everything
 npm run assets     # regenerate popup/theme.css, content/theme.css, popup/fonts/
-npm run screenshots  # re-render store-assets/screenshots/*.png (needs Edge or Chrome)
+npm run screenshots  # re-render store-assets/screenshots/*.png and promo/*.png (needs Edge or Chrome)
 npm run package    # dist/everything-for-youtube-<version>.zip (what gets uploaded)
 ```
 

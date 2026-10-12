@@ -25,6 +25,9 @@ Values to enter in the Chrome Web Store developer dashboard. Keep in sync with `
 
   They are illustrations with placeholder content (regenerate with `npm run screenshots`); replace with
   real captures if they can be taken without personal data.
+- **Small promo tile (440x280, required):** `store-assets/promo/small-promo-440x280.png`
+- **Marquee promo tile (1400x560, optional):** `store-assets/promo/marquee-1400x560.png` (only used if the store features the
+  extension; safe to skip)
 - **Homepage / support URL:** https://github.com/Atsukio/everything-for-youtube
   (issues: https://github.com/Atsukio/everything-for-youtube/issues)
 

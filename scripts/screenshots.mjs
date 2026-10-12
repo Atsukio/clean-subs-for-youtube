@@ -76,3 +76,29 @@ for (const [scene, file] of scenes) {
   );
   console.log("Wrote store-assets/screenshots/" + file);
 }
+
+// Promo images: the small promo tile (required by the store) and the marquee (optional)
+const promoDir = path.join(assets, "promo");
+fs.mkdirSync(promoDir, { recursive: true });
+const promoPage = pathToFileURL(path.join(assets, "promo.html")).href;
+for (const [scene, width, height, file] of [
+  ["small", 440, 280, "small-promo-440x280.png"],
+  ["marquee", 1400, 560, "marquee-1400x560.png"],
+]) {
+  execFileSync(
+    browser,
+    [
+      "--headless",
+      "--disable-gpu",
+      "--allow-file-access-from-files",
+      "--hide-scrollbars",
+      `--window-size=${width},${height}`,
+      "--blink-settings=preferredColorScheme=0",
+      "--virtual-time-budget=3000",
+      `--screenshot=${path.join(promoDir, file)}`,
+      `${promoPage}#${scene}`,
+    ],
+    { stdio: "ignore" },
+  );
+  console.log("Wrote store-assets/promo/" + file);
+}
