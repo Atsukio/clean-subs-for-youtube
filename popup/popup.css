@@ -122,7 +122,8 @@ input[role="switch"]:disabled { cursor: default; opacity: .38; }
 .field input:hover { border-color: var(--md-sys-color-on-surface); }
 .field input:focus { border: 2px solid var(--md-sys-color-primary); padding: 15px; }
 .field input::placeholder { color: var(--md-sys-color-on-surface-variant); opacity: 0; }
-.field input:focus::placeholder { opacity: 1; }
+.field input:focus::placeholder,
+.field.saved input::placeholder { opacity: 1; }
 .field .label {
   position: absolute;
   left: 12px;
@@ -138,7 +139,8 @@ input[role="switch"]:disabled { cursor: default; opacity: .38; }
 }
 /* Floating label: moves to the outline when focused or filled */
 .field input:focus + .label,
-.field input:not(:placeholder-shown) + .label {
+.field input:not(:placeholder-shown) + .label,
+.field.saved .label {
   transform: translateY(-24px) scale(.75);
 }
 .field input:focus + .label { color: var(--md-sys-color-primary); }

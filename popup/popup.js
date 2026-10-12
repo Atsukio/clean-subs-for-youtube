@@ -33,6 +33,8 @@ async function renderRoom() {
   $('room-help').textContent = streamkey ? `Active room: ${streamkey}` : 'No room configured.';
   // The key is never shown back; blank means "keep the saved one".
   $('apiKey').placeholder = apiKey ? '•••••• saved' : ' ';
+  // Float the label and show the placeholder so a stored (never displayed) key is obvious
+  $('apiKey-field').classList.toggle('saved', !!apiKey);
   $('apiKey-help').textContent = apiKey
     ? 'A key is saved. Leave blank to keep it.'
     : 'From your Watch2Gether account\'s API page.';
