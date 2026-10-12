@@ -2,14 +2,14 @@
 
 A Chrome extension with optional YouTube features. **Every feature can be switched on or off** from the extension's popup, and changes apply straight away without reloading the page.
 
-
+## Subscriptions page
 
 - Removes the "Most relevant" section and other injected shelves
 - Adds a sticky **Videos | Shorts** tab bar that switches the page in place; the Videos tab hides Shorts mixed into the grid
 - Keeps "All subscriptions" on the same row as the tabs
 - Matches YouTube's light or dark theme
 
-**Watch2Gether**
+## Watch2Gether
 
 - Hover a video thumbnail and click the **W** button to add that video to your Watch2Gether room's playlist (off by default, see below)
 
