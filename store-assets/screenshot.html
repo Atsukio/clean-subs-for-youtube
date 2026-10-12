@@ -55,9 +55,10 @@
   .sub { margin-left: 6px; height: 36px; line-height: 36px; padding: 0 16px; border-radius: 18px; background: #f1f1f1; color: #0f0f0f; font-size: 14px; font-weight: 500; }
   .gap { flex: 1; }
   .pillrow { display: flex; align-items: center; }
-  .ypill { display: inline-flex; align-items: center; height: 36px; padding: 0 16px; border-radius: 18px; margin-left: 8px; font: 500 14px/20px Roboto, Arial, sans-serif; background: var(--yt-spec-badge-chip-background); color: var(--yt-spec-text-primary); }
+  .ypill { display: inline-flex; align-items: center; height: 40px; padding: 0 16px; border-radius: 20px; margin-left: 8px; font: 500 14px/18px Roboto, Arial, sans-serif; background: var(--yt-spec-badge-chip-background); color: var(--yt-spec-text-primary); }
   .ypill.first { margin-left: 0; }
-  .w2gpill { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 16px 0 10px; margin-left: 8px; border-radius: 18px; font: 500 14px/20px Roboto, Arial, sans-serif; background: var(--yt-spec-badge-chip-background); color: var(--yt-spec-text-primary); }
+  /* Looks like YouTube's own size-M tonal buttons; the real button copies their classes at runtime */
+  .w2gpill { display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 16px 0 10px; margin-left: 8px; border-radius: 20px; font: 500 14px/18px Roboto, Arial, sans-serif; background: var(--yt-spec-badge-chip-background); color: var(--yt-spec-text-primary); }
   [data-scene="watch"] .watch { display: block; }
   [data-scene="watch"] .grid, [data-scene="watch"] #rysl-tabs { display: none; }
 
@@ -114,7 +115,7 @@
   const ICON = `<svg viewBox="0 0 36 24" width="30" height="20" fill="none" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <path class="plus" d="M6 7.5v9M1.5 12h9" stroke="#fff" stroke-width="2.6"/>
     <g transform="translate(12 0)"><path d="M3 5l4.5 14L12 9" stroke="#FDBD00"/><path d="M12 9l4.5 10L21 5" stroke="#E8EDF4"/></g></svg>`;
-  document.getElementById("w2gpill").innerHTML = ICON.replace(/#fff/g, "currentColor").replace('stroke="#E8EDF4"', 'stroke="currentColor"') + "W2G";
+  document.getElementById("w2gpill").innerHTML = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6l4 12 5-9 5 9 4-12"/></svg>W2G';
   const hues = [200, 340, 140, 30, 260, 180, 50, 310];
   const g = document.getElementById("g");
   for (let i = 0; i < 12; i++) {

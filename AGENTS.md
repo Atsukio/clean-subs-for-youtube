@@ -122,10 +122,16 @@ with **Roboto**.
   (`html.efy-no-shorts:not(.rysl-f-tabs)`), otherwise the Shorts tab would have nothing to show.
 - On `/watch` the W button is a pill in the action row (`ytd-watch-metadata #top-level-buttons-computed`), placed right
   after the Like/Dislike group (adapter: `isWatchPage`, `watchTargetSelector`, `getWatchVideo`), controlled by the
-  `w2gWatchPage` toggle. Its light/dark colours are fixed and chosen by detecting the page theme (`html[dark]`, else background
-  luminance) into `data-theme`; do not rely on `--yt-spec-*` variables, they did not resolve for the button on real YouTube.
-  YouTube re-renders that row, so `scan()` re-attaches the pill if it was detached, and `yt-navigate-finish` resets it
-  to idle so "Added" does not carry over to the next video. Thumbnails keep the hover overlay variant.
+  `w2gWatchPage` toggle. It is built by `createNativePill()`: a plain `<button>` that **copies the class names of a real
+  sibling button** (Share, Download...) at runtime, so size, font, shape, colours, hover and light/dark all come from
+  YouTube's own CSS. YouTube's classes are camelCase (`ytSpecButtonShapeNextHost/Tonal/Mono/SizeM`, size M = 40px high, 20px
+  radius); older markup used `yt-spec-button-shape-next`, so matching is case-insensitive for both (`SHAPE_CLASS`). Spacing is
+  copied from the sibling's outer element (the direct child of the row) by `matchSpacing()`. If no sibling exists yet, a
+  shadow-DOM fallback pill (40px, `--yt-sys-color-baseline--*` colours, `data-theme` detection) is used and swapped for the
+  native one on a later scan. Do not use `--yt-spec-*` variables: they do not exist on the real page. The icon is a
+  stroked glyph with `fill="none"` on the path, because YouTube's icon wrappers set `fill: currentColor`.
+  YouTube re-renders the row, so `scan()` re-places the pill after Like/Dislike when needed, and `yt-navigate-finish` resets
+  it to idle so "Added" does not carry over to the next video. Thumbnails keep the hover overlay variant.
 - The mutation observers are debounced and idle off the relevant pages. Keep it that way: YouTube
   mutates the DOM constantly.
 - The `All subscriptions` control is *moved* into the tab bar, so removing the bar must put it back
