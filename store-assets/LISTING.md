@@ -25,8 +25,8 @@ Values to enter in the Chrome Web Store developer dashboard. Keep in sync with `
 
   They are illustrations with placeholder content (regenerate with `npm run screenshots`); replace with
   real captures if they can be taken without personal data.
-- **Homepage / support URL:** https://github.com/Atsukio/clean-subs-for-youtube
-  (issues: https://github.com/Atsukio/clean-subs-for-youtube/issues)
+- **Homepage / support URL:** https://github.com/Atsukio/everything-for-youtube
+  (issues: https://github.com/Atsukio/everything-for-youtube/issues)
 
 ### Detailed description
 
@@ -68,7 +68,7 @@ GOOD TO KNOW
 - **Single purpose:** Improve YouTube browsing: tidy and filter the Subscriptions page, hide Shorts, and
   let the user add videos to their own Watch2Gether room. Every feature is optional and can be switched
   off.
-- **Privacy policy URL:** https://github.com/Atsukio/clean-subs-for-youtube/blob/main/PRIVACY.md
+- **Privacy policy URL:** https://github.com/Atsukio/everything-for-youtube/blob/main/PRIVACY.md
 
 ### Permission justifications
 

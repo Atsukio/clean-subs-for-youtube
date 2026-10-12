@@ -19,8 +19,9 @@ length filters), hide Shorts everywhere, Watch2Gether button (thumbnails and vid
 switcher, a master pause switch, and settings export/import.
 Plain JS/CSS/HTML, no framework, no bundler. npm is for dev tooling only.
 
-The GitHub repo is still named `clean-subs-for-youtube`; `manifest.json` `homepage_url` and the
-banner in the archived W2G repo point at it.
+The GitHub repo is `Atsukio/everything-for-youtube` (renamed from `clean-subs-for-youtube`; GitHub redirects the old
+URL). `manifest.json` `homepage_url`, the listing values and the banner in the archived W2G repo point at it. The local
+folder on the owner's machine is still called `clean-subs-for-youtube`; that does not matter.
 
 ## Layout
 
@@ -120,27 +121,31 @@ with **Roboto**.
   never filtered by length. Title/keyword matching is substring, channel matching is an exact (case-insensitive) name.
 - "Hide Shorts everywhere" is CSS-only and steps aside on the Subscriptions page while the tabs are on
   (`html.efy-no-shorts:not(.rysl-f-tabs)`), otherwise the Shorts tab would have nothing to show.
-- On `/watch` the W button is a pill in the action row (`ytd-watch-metadata #top-level-buttons-computed`), placed right
-  after the Like/Dislike group (adapter: `isWatchPage`, `watchTargetSelector`, `getWatchVideo`), controlled by the
-  `w2gWatchPage` toggle. It is built by `createNativePill()` from a **real sibling button (Share, Download...), copying
-  its class names at runtime** so size, font, shape, colours, hover and light/dark come from YouTube's own CSS. What the
-  real Share markup looks like (verified from a pasted copy): `yt-button-view-model.ytd-menu-renderer > button-view-model >
-  button.ytSpecButtonShapeNextHost/Tonal/Mono/SizeM/IconLeading/...`, containing an icon div (`ytSpecButtonShapeNextIcon`),
-  a text div (`...ButtonTextContent`), a `<yt-touch-feedback-shape>` (Host/Stroke/Fill divs: the hover/press highlight)
-  and a `<yt-light-shape>` (the rim light). Size M is 40px high with a 20px radius. Classes are camelCase now; older markup
-  used `yt-spec-button-shape-next`, so matching is case-insensitive for both (`SHAPE_CLASS`). We rebuild the touch-feedback and
-  light layers as plain divs with the same classes and drive the feedback fill's opacity ourselves (hover .1, press .2),
-  because YouTube's custom elements are not attached to a button we create.
-- Spacing: YouTube spaces the row through a class on the outer wrapper (`ytd-menu-renderer`), so our wrapper copies the
-  sibling wrapper's classes, and `matchSpacing()` then measures the real pixel gap between two of YouTube's own buttons and
-  adjusts our side margins to match, whichever neighbour carries the spacing. Do not copy margins from a neighbour: that
-  produced a missing gap on the real page.
-- The logo is the coloured "+W" (yellow stroke, theme-coloured stroke, "+" only while idle), 28x19 inside a 24px layout
-  slot, with `fill="none"` on every path because YouTube's icon wrappers set `fill: currentColor`.
-- If no sibling exists yet, a shadow-DOM fallback pill (40px, `--yt-sys-color-baseline--*` colours, `data-theme` detection) is used
-  and swapped for the native one on a later scan. Do not use `--yt-spec-*` variables: they do not exist on the real page.
-  YouTube re-renders the row, so `scan()` re-places the pill after Like/Dislike when needed, and `yt-navigate-finish` resets
-  it to idle so "Added" does not carry over to the next video. Thumbnails keep the hover overlay variant.
+- **Video-page W button** (`createNativePill()` in `content/w2g/button.js`, toggle `w2gWatchPage`). Real structure of the
+  action row (verified from pasted markup): inside `ytd-menu-renderer` there are TWO containers.
+  `#top-level-buttons-computed` holds only the Like/Dislike group (`segmented-like-dislike-button-view-model`, plus
+  other extensions' bits such as Return YouTube Dislike's rate bar), while Share, Ask, Save... live in the separate
+  `#flexible-item-buttons` as `yt-button-view-model.ytd-menu-renderer > button-view-model > button`. The adapter's
+  `getWatchTarget()` returns `#flexible-item-buttons` (falling back to `#top-level-buttons-computed` on a one-row layout)
+  and the pill goes in as its **first child**, i.e. straight after the like group. Searching the like container for a
+  button to copy finds only Like/Dislike (excluded), which silently produced the shadow fallback: do not do that.
+- It is built from a real sibling button (Share...): class names copied at runtime, and the same **wrapper chain**
+  (`yt-button-view-model` > `button-view-model`, element names and classes), so YouTube's own CSS (size M = 40px high, 20px
+  radius, tonal/mono colours, light/dark) and the row's spacing rule (keyed on `yt-button-view-model.ytd-menu-renderer`) apply
+  to it natively. A plain `<div>` with copied classes did NOT get the spacing. Classes are camelCase now
+  (`ytSpecButtonShapeNext...`); older markup used `yt-spec-button-shape-next`, so matching is case-insensitive (`SHAPE_CLASS`).
+  Inside the button: icon div, text div, a hover/press layer (`ytSpecTouchFeedbackShapeHost/Stroke/Fill`, rebuilt from plain
+  divs; we drive the fill opacity: hover .1, press .2, since YouTube's custom elements are not attached to our button)
+  and the rim light (`contribYtLightShape...`), all with classes copied from the sibling.
+- `matchSpacing()` is a safety net that measures real pixel gaps and adjusts our margins only if they differ from the gap
+  between YouTube's own buttons (normally it changes nothing). The logo is the coloured "+W" (yellow stroke, theme-coloured
+  stroke, "+" only while idle), 28x19 in a 24px layout slot, with `fill="none"` on every path because YouTube's icon
+  wrappers set `fill: currentColor`.
+- If no sibling button exists yet, a shadow-DOM fallback pill (40px, `--yt-sys-color-baseline--*` colours, `data-theme`
+  detection) is used and swapped for the native one on a later scan. `--yt-spec-*` variables do not exist on the real page.
+  `scan()` re-places the pill if YouTube re-renders the row, and `yt-navigate-finish` resets it to idle so "Added" does not
+  carry over. Thumbnails keep the hover-overlay variant. To test without YouTube, serve a mock row with this structure from a
+  throwaway local server and serve the adapter with `matches` forced true (Edge forces HTTPS for youtube.com hosts).
 - The mutation observers are debounced and idle off the relevant pages. Keep it that way: YouTube
   mutates the DOM constantly.
 - The `All subscriptions` control is *moved* into the tab bar, so removing the bar must put it back
@@ -153,7 +158,7 @@ with **Roboto**.
 - Manifest `description` must stay <= 132 characters.
 - Listing purpose to state: improve YouTube browsing (single-purpose policy; the two feature sets
   are justified as one purpose, so keep the description consistent).
-- Privacy policy URL: `https://github.com/Atsukio/clean-subs-for-youtube/blob/main/PRIVACY.md`.
+- Privacy policy URL: `https://github.com/Atsukio/everything-for-youtube/blob/main/PRIVACY.md`.
   Update `PRIVACY.md` (and its effective date) whenever data handling changes.
 - Screenshots are 1280x800 24-bit PNGs in `store-assets/screenshots/` (subscriptions, watch2gether thumbnails,
   watch2gether video page, settings, settings-watch2gether). `npm run screenshots` renders them from `store-assets/screenshot.html` (scenes by URL hash) using

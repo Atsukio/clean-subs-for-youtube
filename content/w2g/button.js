@@ -75,13 +75,21 @@
     if (!sibling) return null;
     const classOf = (selector) => sibling.querySelector(selector)?.className || '';
 
-    const host = document.createElement('div');
-    // The outer element YouTube lays out in the row (a direct child of the bar). Its classes (e.g. ytd-menu-renderer)
-    // are what the row's spacing rules hang off, so our wrapper carries them too.
-    let outer = sibling;
-    while (outer.parentElement && outer.parentElement !== bar) outer = outer.parentElement;
-    host.className = (OUR_CLASS + ' ' + outer.className).trim();
-    host.style.cssText = 'display:inline-flex;align-items:center;';
+    // Rebuild the wrapper chain the real button sits in (yt-button-view-model > button-view-model), element names and
+    // classes included, so YouTube's own styling and spacing rules for those apply to our button as well.
+    const chain = [];
+    for (let el = sibling.parentElement; el && el !== bar; el = el.parentElement) chain.unshift(el);
+    let host = null;
+    let holder = null;
+    for (const original of chain) {
+      const copy = document.createElement(original.tagName.toLowerCase());
+      copy.className = original.className;
+      if (holder) holder.append(copy); else host = copy;
+      holder = copy;
+    }
+    if (!host) { host = document.createElement('div'); holder = host; }
+    host.classList.add(OUR_CLASS);
+    if (chain.length) host.style.display = getComputedStyle(chain[0]).display;
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = sibling.className;
@@ -128,7 +136,7 @@
       }
       btn.append(lightHost);
     }
-    host.append(btn);
+    holder.append(btn);
     const layer = (opacity) => { fill.style.opacity = opacity; };
     btn.addEventListener('pointerenter', () => layer('0.1'));
     btn.addEventListener('pointerleave', () => layer(''));
@@ -174,17 +182,17 @@
     return { host, reset };
   }
 
-  // Make the gaps either side of our pill equal the gap YouTube leaves between its own buttons. Measured in pixels,
-  // so it works whatever creates that spacing (margins on either neighbour, flex gap...).
-  function matchSpacing(bar, host) {
+  // Make the gaps either side of our pill equal the gap YouTube leaves between its own buttons, measured in pixels,
+  // so it holds whatever creates that spacing (margins on either neighbour, flex gap...). With the rebuilt wrapper this
+  // is normally already right and nothing changes.
+  function matchSpacing(host) {
     const rect = (el) => el.getBoundingClientRect();
-    const items = [...bar.children].filter((el) => rect(el).width > 0);
-    const at = items.indexOf(host);
-    if (at < 0) return;
+    const visible = (el) => el && rect(el).width > 0;
+    const prev = host.previousElementSibling;
+    const next = host.nextElementSibling;
     let target = 8; // YouTube's usual gap, used when there is no pair of its own buttons to measure
-    for (let k = 0; k + 1 < items.length; k++) {
-      if (items[k] === host || items[k + 1] === host) continue;
-      const gap = rect(items[k + 1]).left - rect(items[k]).right;
+    for (let el = next; visible(el) && visible(el.nextElementSibling); el = el.nextElementSibling) {
+      const gap = rect(el.nextElementSibling).left - rect(el).right;
       if (gap >= 0 && gap <= 32) { target = gap; break; }
     }
     const adjust = (side, gap) => {
@@ -193,10 +201,8 @@
       if (Math.abs(wanted - current) > 0.5) host.style[side] = wanted + 'px';
     };
     const sameRow = (el) => Math.abs((rect(el).top + rect(el).bottom) - (rect(host).top + rect(host).bottom)) < 20;
-    const prev = items[at - 1];
-    const next = items[at + 1];
-    if (prev && sameRow(prev)) adjust('marginLeft', rect(host).left - rect(prev).right);
-    if (next && sameRow(next)) adjust('marginRight', rect(next).left - rect(host).right);
+    if (visible(prev) && sameRow(prev)) adjust('marginLeft', rect(host).left - rect(prev).right);
+    if (visible(next) && sameRow(next)) adjust('marginRight', rect(next).left - rect(host).right);
   }
 
   // variant: 'thumb' (hover overlay on a thumbnail) or 'pill' (video page action row)
@@ -260,9 +266,14 @@
   // target -> what was added for it, so switching the feature off can undo everything.
   const injected = new Map();
 
-  // The pill sits right after the Like/Dislike group, or first in the row if that can't be found
-  // Safe to call repeatedly: it only touches the DOM when the pill is not already in the right place.
+  // Where the pill goes: first in #flexible-item-buttons, i.e. straight after the Like/Dislike group and before Share.
+  // (On a layout where everything is in one row it goes right after the like group, or first.) Safe to call
+  // repeatedly: it only touches the DOM when the pill is not already in the right place.
   function placePill(bar, host) {
+    if (bar.id === 'flexible-item-buttons') {
+      if (bar.firstElementChild !== host) bar.prepend(host);
+      return;
+    }
     const likes = bar.querySelector('segmented-like-dislike-button-view-model, ytd-segmented-like-dislike-button-renderer');
     if (likes) {
       if (likes.nextElementSibling !== host) likes.after(host);
@@ -316,7 +327,7 @@
     document.querySelectorAll(adapter.targetSelector).forEach((target) => inject(target));
     // The action row on the video page, when that sub-feature is on
     if (settings.w2gWatchPage && adapter.isWatchPage?.(location)) {
-      const bar = document.querySelector(adapter.watchTargetSelector);
+      const bar = adapter.getWatchTarget?.();
       if (bar) {
         if (!injected.has(bar)) inject(bar, 'watch');
         const info = injected.get(bar);
@@ -329,7 +340,7 @@
           }
         }
         placePill(bar, info.host); // also re-attaches the pill if YouTube re-rendered the row
-        if (info.native) matchSpacing(bar, info.host);
+        if (info.native) matchSpacing(info.host);
         else applyTheme(info.host); // the user may have switched YouTube's theme
       }
     } else {

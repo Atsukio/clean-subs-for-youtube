@@ -1,6 +1,6 @@
 // Site adapter contract:
 //   name, matches(location), targetSelector, getVideo(target) -> { url, title } | null
-//   optional: isWatchPage(location), watchTargetSelector, getWatchVideo() -> { url, title }
+//   optional: isWatchPage(location), getWatchTarget() -> row element, getWatchVideo() -> { url, title }
 // Register with window.W2GAdapters.push(adapter).
 (window.W2GAdapters ||= []).push({
   name: 'youtube',
@@ -11,7 +11,12 @@
 
   // The video page: a pill button in the action row, next to Like / Dislike, adds the video being watched.
   isWatchPage: (loc) => loc.pathname === '/watch',
-  watchTargetSelector: 'ytd-watch-metadata #top-level-buttons-computed',
+  // Where the new button goes. On the current layout Share, Ask, Save... live in #flexible-item-buttons, a sibling of the
+  // Like/Dislike container (#top-level-buttons-computed, which holds only the like group); older layouts put them all in
+  // #top-level-buttons-computed.
+  getWatchTarget: () =>
+    document.querySelector('ytd-watch-metadata #flexible-item-buttons') ||
+    document.querySelector('ytd-watch-metadata #top-level-buttons-computed'),
   getWatchVideo() {
     const title = document.querySelector('ytd-watch-metadata h1')?.textContent || document.title.replace(/ - YouTube$/, '');
     return { url: location.href, title: clean(title) };
