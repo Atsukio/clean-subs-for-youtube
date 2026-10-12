@@ -82,6 +82,9 @@ with **Roboto**.
 - Use tokens (`var(--md-sys-color-*)`, `--md-sys-shape-*`, `--md-sys-typescale-*`,
   `--md-sys-state-*`), not raw values. Components in use: switch, outlined text field with floating
   label, filled / tonal / text buttons, segmented button (the Videos|Shorts tabs).
+- Popup type sizes are deliberately one step down the M3 scale for a compact popup: title-medium (16px)
+  heading, body-medium (14px) for list items and fields, body-small (12px) for supporting text.
+  Do not go back to body-large/title-large without a reason.
 - Fonts are bundled locally (`popup/fonts`, Roboto, OFL licence included): the popup must not make
   network requests. The injected tab bar relies on YouTube's own already-loaded Roboto.
 - Popup follows `prefers-color-scheme`; the tab bar follows YouTube's `html[dark]`. The bar's
