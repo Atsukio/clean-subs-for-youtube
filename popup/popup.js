@@ -27,26 +27,19 @@ function say(msg, kind = '') {
   $('status').className = kind;
 }
 
-async function renderRoom() {
-  const { apiKey, streamkey } = await chrome.storage.local.get(['apiKey', 'streamkey']);
-  $('room-input').value = streamkey || '';
-  $('room-help').textContent = streamkey ? `Active room: ${streamkey}` : 'No room configured.';
-  // The key is never shown back; blank means "keep the saved one".
-  $('apiKey').placeholder = apiKey ? '•••••• saved' : ' ';
-  // Float the label and show the placeholder so a stored (never displayed) key is obvious
-  $('apiKey-field').classList.toggle('saved', !!apiKey);
-  $('apiKey-help').textContent = apiKey
-    ? 'A key is saved. Leave blank to keep it.'
-    : 'From your Watch2Gether account\'s API page.';
-}
+// ---------- Feature toggles and their options ----------
 
-function renderToggles(settings) {
+function renderSettings(settings) {
+  document.body.classList.toggle('paused', settings.paused);
   for (const box of document.querySelectorAll('input[data-setting]')) {
     box.checked = !!settings[box.dataset.setting];
+    // e.g. "keep All subscriptions on the tab row" only makes sense while the tabs are on
+    if (box.dataset.needs) box.disabled = !settings[box.dataset.needs];
   }
-  document.querySelector('[data-setting="allSubsInRow"]').disabled = !settings.tabs;
-  $('w2g-config').hidden = !settings.w2g;
-  $('w2g-hint').hidden = settings.w2g;
+  for (const el of document.querySelectorAll('[data-show-when]')) el.hidden = !settings[el.dataset.showWhen];
+  for (const el of document.querySelectorAll('[data-hide-when]')) el.hidden = !!settings[el.dataset.hideWhen];
+  for (const el of document.querySelectorAll('[data-value]')) el.value = settings[el.dataset.value];
+  for (const el of document.querySelectorAll('[data-list]')) el.value = (settings[el.dataset.list] || []).join('\n');
 }
 
 for (const box of document.querySelectorAll('input[data-setting]')) {
@@ -64,13 +57,78 @@ for (const box of document.querySelectorAll('input[data-setting]')) {
         await chrome.permissions.remove({ origins: W2G_ORIGINS });
       }
     }
-    renderToggles(await EFY.save({ [key]: box.checked }));
+    renderSettings(await EFY.save({ [key]: box.checked }));
     say('');
   });
 }
 
+// Selects and number fields save as soon as they change
+for (const el of document.querySelectorAll('[data-value]')) {
+  el.addEventListener('change', async () => {
+    const patch = EFY.sanitize({ [el.dataset.value]: el.type === 'number' ? Number(el.value) : el.value });
+    renderSettings(await EFY.save(patch)); // re-render shows the value that was actually kept
+  });
+}
+
+// One entry per line; blank lines and extra whitespace are dropped
+for (const el of document.querySelectorAll('[data-list]')) {
+  el.addEventListener('change', async () => {
+    const patch = EFY.sanitize({ [el.dataset.list]: el.value.split('\n') });
+    renderSettings(await EFY.save(patch));
+  });
+}
+
+// ---------- Watch2Gether key and rooms ----------
+
+async function loadRooms() {
+  const { rooms = [], streamkey } = await chrome.storage.local.get(['rooms', 'streamkey']);
+  // Earlier versions kept a single room under `streamkey` only
+  if (streamkey && !rooms.some((r) => r.streamkey === streamkey)) {
+    rooms.push({ name: streamkey, streamkey });
+    await chrome.storage.local.set({ rooms });
+  }
+  return { rooms, active: streamkey };
+}
+
+async function renderRoom() {
+  const { apiKey } = await chrome.storage.local.get('apiKey');
+  const { rooms, active } = await loadRooms();
+
+  const select = $('room-select');
+  select.replaceChildren(...rooms.map((r) => new Option(r.name, r.streamkey)));
+  if (!rooms.length) select.append(new Option('No rooms yet', ''));
+  select.value = active || '';
+  select.disabled = !rooms.length;
+  $('room-open').hidden = !active;
+  $('room-open').href = active ? `https://w2g.tv/rooms/${active}` : '#';
+  $('room-remove').hidden = !active;
+
+  // The key is never shown back; blank means "keep the saved one".
+  $('apiKey').placeholder = apiKey ? '•••••• saved' : ' ';
+  // Float the label and show the placeholder so a stored (never displayed) key is obvious
+  $('apiKey-field').classList.toggle('saved', !!apiKey);
+  $('apiKey-help').textContent = apiKey
+    ? 'A key is saved. Leave blank to keep it.'
+    : 'From your Watch2Gether account\'s API page.';
+}
+
+$('room-select').addEventListener('change', async () => {
+  await chrome.storage.local.set({ streamkey: $('room-select').value });
+  renderRoom();
+});
+
+$('room-remove').addEventListener('click', async () => {
+  const { rooms, active } = await loadRooms();
+  const left = rooms.filter((r) => r.streamkey !== active);
+  await chrome.storage.local.set({ rooms: left });
+  if (left.length) await chrome.storage.local.set({ streamkey: left[0].streamkey });
+  else await chrome.storage.local.remove('streamkey');
+  say('Room removed.', 'ok');
+  renderRoom();
+});
+
 $('save').addEventListener('click', async () => {
-  // Either field may be saved on its own; a blank field keeps what's already stored.
+  // Either part may be saved on its own; a blank field keeps what's already stored.
   const update = {};
   const key = $('apiKey').value.trim();
   if (key) update.apiKey = key;
@@ -78,11 +136,18 @@ $('save').addEventListener('click', async () => {
   if (roomText) {
     const streamkey = parseStreamkey(roomText);
     if (!streamkey) return say('Enter a valid streamkey or room URL.', 'error');
-    update.streamkey = streamkey;
+    const { rooms } = await loadRooms();
+    const name = $('room-name').value.trim() || streamkey;
+    const existing = rooms.find((r) => r.streamkey === streamkey);
+    if (existing) existing.name = name; else rooms.push({ name, streamkey });
+    update.rooms = rooms;
+    update.streamkey = streamkey; // the newly added room becomes the active one
   }
   if (!Object.keys(update).length) return say('Nothing to save.', 'error');
   await chrome.storage.local.set(update);
   $('apiKey').value = '';
+  $('room-input').value = '';
+  $('room-name').value = '';
   const saved = await chrome.storage.local.get(['apiKey', 'streamkey']);
   const missing = [!saved.apiKey && 'API key', !saved.streamkey && 'room'].filter(Boolean);
   say(missing.length ? `Saved. Still needed: ${missing.join(' and ')}.` : 'Saved.', 'ok');
@@ -97,11 +162,36 @@ $('test').addEventListener('click', async () => {
 });
 
 $('forget').addEventListener('click', async () => {
-  await chrome.storage.local.remove(['apiKey', 'streamkey']);
+  await chrome.storage.local.remove(['apiKey', 'streamkey', 'rooms']);
   $('apiKey').value = '';
-  say('Saved key and room removed.', 'ok');
+  say('Saved key and rooms removed.', 'ok');
   renderRoom();
 });
 
-EFY.load().then(renderToggles);
+// ---------- Share settings ----------
+
+// The W2G toggle is left out both ways: it depends on a permission granted per browser.
+$('export').addEventListener('click', async () => {
+  const { w2g, ...shareable } = await EFY.loadRaw(); // eslint-disable-line no-unused-vars
+  $('share').value = JSON.stringify(shareable, null, 2);
+  try {
+    await navigator.clipboard.writeText($('share').value);
+    say('Settings code copied.', 'ok');
+  } catch {
+    $('share').select();
+    say('Settings code ready. Copy it from the box.', 'ok');
+  }
+});
+
+$('import').addEventListener('click', async () => {
+  let parsed;
+  try { parsed = JSON.parse($('share').value); } catch { return say('That is not a valid settings code.', 'error'); }
+  const { w2g, ...patch } = EFY.sanitize(parsed); // eslint-disable-line no-unused-vars
+  const count = Object.keys(patch).length;
+  if (!count) return say('No settings found in that code.', 'error');
+  renderSettings(await EFY.save(patch));
+  say(`Imported ${count} setting${count === 1 ? '' : 's'}.`, 'ok');
+});
+
+EFY.loadRaw().then(renderSettings);
 renderRoom();

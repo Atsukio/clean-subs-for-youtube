@@ -2,8 +2,8 @@
   "manifest_version": 3,
   "name": "Everything for YouTube",
   "short_name": "Everything for YT",
-  "version": "1.1.0",
-  "description": "YouTube tweaks for personal and friends' use: Videos/Shorts tabs on Subscriptions and one-click add to Watch2Gether.",
+  "version": "1.2.0",
+  "description": "YouTube tweaks for personal and friends' use: Subscriptions tabs and filters, hide Shorts, one-click add to Watch2Gether.",
   "permissions": ["storage"],
   "optional_host_permissions": [
     "https://api.w2g.tv/*",
@@ -26,8 +26,8 @@
   "content_scripts": [
     {
       "matches": ["https://www.youtube.com/*"],
-      "js": ["lib/settings.js", "content/subs-cleaner.js"],
-      "css": ["content/theme.css", "content/subs-cleaner.css"],
+      "js": ["lib/settings.js", "content/subs-cleaner.js", "content/yt-cleanup.js"],
+      "css": ["content/theme.css", "content/subs-cleaner.css", "content/yt-cleanup.css"],
       "run_at": "document_start"
     },
     {

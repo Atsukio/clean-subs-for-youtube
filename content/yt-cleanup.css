@@ -1,0 +1,33 @@
+/* Hide Shorts everywhere. The class is set on <html> by yt-cleanup.js.
+   On the Subscriptions page the Videos | Shorts tabs (rysl-f-tabs) manage Shorts themselves,
+   so this rule steps aside there and the Shorts tab keeps working. */
+html.efy-no-shorts:not(.rysl-f-tabs) ytd-reel-shelf-renderer,
+html.efy-no-shorts:not(.rysl-f-tabs) ytd-rich-shelf-renderer[is-shorts],
+html.efy-no-shorts:not(.rysl-f-tabs) ytd-rich-section-renderer:has(ytd-rich-shelf-renderer[is-shorts]),
+html.efy-no-shorts:not(.rysl-f-tabs) ytd-rich-section-renderer:has(ytd-reel-shelf-renderer),
+html.efy-no-shorts:not(.rysl-f-tabs) grid-shelf-view-model:has(a[href^="/shorts/"]),
+html.efy-no-shorts:not(.rysl-f-tabs) ytd-rich-item-renderer:has(a[href^="/shorts/"]),
+html.efy-no-shorts:not(.rysl-f-tabs) ytd-video-renderer:has(a[href^="/shorts/"]),
+html.efy-no-shorts:not(.rysl-f-tabs) ytd-grid-video-renderer:has(a[href^="/shorts/"]),
+html.efy-no-shorts:not(.rysl-f-tabs) ytd-compact-video-renderer:has(a[href^="/shorts/"]),
+html.efy-no-shorts:not(.rysl-f-tabs) yt-lockup-view-model:has(a[href^="/shorts/"]),
+html.efy-no-shorts:not(.rysl-f-tabs) ytm-shorts-lockup-view-model,
+html.efy-no-shorts:not(.rysl-f-tabs) ytm-shorts-lockup-view-model-v2,
+/* Sidebar entries (full and collapsed) */
+html.efy-no-shorts ytd-guide-entry-renderer:has(a[href="/shorts"]),
+html.efy-no-shorts ytd-mini-guide-entry-renderer:has(a[href="/shorts"]),
+html.efy-no-shorts ytd-mini-guide-entry-renderer[aria-label="Shorts"] {
+  display: none !important;
+}
+
+/* Subscriptions filters (data attributes are set by yt-cleanup.js) */
+ytd-browse[page-subtype="subscriptions"] [data-efy-hide] {
+  display: none !important;
+}
+ytd-browse[page-subtype="subscriptions"] [data-efy-dim] {
+  opacity: 0.35;
+  transition: opacity 0.15s;
+}
+ytd-browse[page-subtype="subscriptions"] [data-efy-dim]:hover {
+  opacity: 1;
+}

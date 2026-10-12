@@ -1,6 +1,6 @@
 <!doctype html>
 <!-- Source for the Web Store screenshots (illustrations with placeholder content; they use the real
-     ../content/*.css). One page, three scenes chosen by the URL hash: #subs, #w2g, #settings.
+     ../content/*.css). One page, four scenes chosen by the URL hash: #subs, #w2g, #settings, #settings-w2g.
      Build all three with:  npm run screenshots  -->
 <html dark>
 <head>
@@ -42,12 +42,12 @@
   .tip { position: absolute; top: 40px; left: 8px; padding: 4px 8px; border-radius: 4px; background: #717171; color: #fff; font-size: 12px; }
 
   /* Scenes */
-  [data-scene="w2g"] .grid, [data-scene="settings"] .grid { margin-top: 12px; }
-  [data-scene="w2g"] #rysl-tabs, [data-scene="settings"] #rysl-tabs { display: none; }
-  [data-scene="subs"] .w2g, [data-scene="subs"] .tip, [data-scene="settings"] .w2g, [data-scene="settings"] .tip { display: none; }
+  [data-scene="w2g"] .grid, [data-scene^="settings"] .grid { margin-top: 12px; }
+  [data-scene="w2g"] #rysl-tabs, [data-scene^="settings"] #rysl-tabs { display: none; }
+  [data-scene="subs"] .w2g, [data-scene="subs"] .tip, [data-scene^="settings"] .w2g, [data-scene^="settings"] .tip { display: none; }
   .popup { display: none; }
-  [data-scene="settings"] .scrim { position: absolute; inset: 0; background: rgba(0,0,0,.45); }
-  [data-scene="settings"] .popup { display: block; position: absolute; top: 60px; right: 16px; width: 360px; height: 690px; border: 0; border-radius: 12px; box-shadow: 0 8px 28px rgba(0,0,0,.6); }
+  [data-scene^="settings"] .scrim { position: absolute; inset: 0; background: rgba(0,0,0,.45); }
+  [data-scene^="settings"] .popup { display: block; position: absolute; top: 60px; right: 16px; width: 360px; height: 600px; /* Chrome caps popups at 600px and scrolls */ border: 0; border-radius: 12px; box-shadow: 0 8px 28px rgba(0,0,0,.6); }
 </style>
 </head>
 <body>
@@ -66,10 +66,12 @@
   </div>
 </div>
 <div class="scrim"></div>
-<iframe class="popup" src="popup-preview.html" title="Extension popup"></iframe>
+<iframe class="popup" id="popup" title="Extension popup"></iframe>
 <script>
   const scene = (location.hash || "#subs").slice(1);
   document.documentElement.dataset.scene = scene;
+  // #settings shows the top of the popup, #settings-w2g scrolls it to the Watch2Gether section
+  document.getElementById("popup").src = "popup-preview.html" + (scene === "settings-w2g" ? "#h-w2g" : "");
   // Highlight the matching sidebar entry and title for the scene
   const active = scene === "subs" ? 2 : 0;
   document.getElementById("side").children[active].className = "on";

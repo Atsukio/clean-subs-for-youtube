@@ -25,7 +25,7 @@
   `;
   const LABELS = { idle: '', loading: '…', added: 'Added', error: 'Error' };
 
-  function createButton(target) {
+  function createButton(target, readVideo) {
     const host = document.createElement('div');
     const root = host.attachShadow({ mode: 'closed' });
     root.innerHTML = `<style>${STYLE}</style><button type="button">${ICON}<span></span></button>`;
@@ -46,7 +46,7 @@
     }
     btn.addEventListener('click', async () => {
       if (btn.dataset.state === 'loading') return;
-      const video = adapter.getVideo(target); // read at click time: YouTube recycles elements
+      const video = readVideo(); // read at click time: YouTube recycles elements
       if (!video) return flash('error', 'Could not find the video link.');
       setState('loading');
       host.keepVisible = true;
@@ -79,35 +79,46 @@
   // target -> what was added to it, so switching the feature off can undo everything.
   const injected = new Map();
 
-  function inject(target) {
+  function inject(target, kind = 'thumb') {
     if (injected.has(target)) return;
     target.setAttribute(MARK, '');
     const madeRelative = getComputedStyle(target).position === 'static';
     if (madeRelative) target.style.position = 'relative';
-    const host = createButton(target);
+    const host = createButton(target, kind === 'watch' ? () => adapter.getWatchVideo() : () => adapter.getVideo(target));
     target.appendChild(host);
     const enter = () => { host.style.display = 'block'; };
     const leave = () => { if (!host.keepVisible) host.style.display = 'none'; };
     target.addEventListener('mouseenter', enter);
     target.addEventListener('mouseleave', leave);
-    injected.set(target, { host, enter, leave, madeRelative });
+    injected.set(target, { host, enter, leave, madeRelative, kind });
   }
 
-  function removeAll() {
-    for (const [target, { host, enter, leave, madeRelative }] of injected) {
-      host.remove();
-      target.removeEventListener('mouseenter', enter);
-      target.removeEventListener('mouseleave', leave);
-      target.removeAttribute(MARK);
-      if (madeRelative) target.style.position = '';
-    }
-    injected.clear();
+  function remove(target) {
+    const { host, enter, leave, madeRelative } = injected.get(target);
+    host.remove();
+    target.removeEventListener('mouseenter', enter);
+    target.removeEventListener('mouseleave', leave);
+    target.removeAttribute(MARK);
+    if (madeRelative) target.style.position = '';
+    injected.delete(target);
   }
+
+  const removeAll = () => [...injected.keys()].forEach(remove);
+  const removeKind = (kind) => [...injected].forEach(([target, info]) => { if (info.kind === kind) remove(target); });
+
+  let settings = { w2g: false, w2gWatchPage: true };
 
   const scan = () => {
     // YouTube recycles and detaches thumbnails; forget the ones that are gone.
     for (const target of injected.keys()) if (!target.isConnected) injected.delete(target);
-    document.querySelectorAll(adapter.targetSelector).forEach(inject);
+    document.querySelectorAll(adapter.targetSelector).forEach((target) => inject(target));
+    // The player on the video page, when that sub-feature is on
+    if (settings.w2gWatchPage && adapter.isWatchPage?.(location)) {
+      const player = document.querySelector(adapter.watchTargetSelector);
+      if (player) inject(player, 'watch');
+    } else {
+      removeKind('watch');
+    }
   };
 
   // Debounced: YouTube mutates the DOM constantly.
@@ -136,6 +147,11 @@
     }
   }
 
-  EFY.load().then((s) => setEnabled(s.w2g));
-  EFY.onChange((s) => setEnabled(s.w2g));
+  const applySettings = (s) => {
+    settings = s;
+    setEnabled(s.w2g);
+    if (enabled) schedule(); // sub-feature changes (watch page button) need a rescan
+  };
+  EFY.load().then(applySettings);
+  EFY.onChange(applySettings);
 })();

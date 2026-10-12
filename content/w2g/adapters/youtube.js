@@ -1,5 +1,6 @@
 // Site adapter contract:
 //   name, matches(location), targetSelector, getVideo(target) -> { url, title } | null
+//   optional: isWatchPage(location), watchTargetSelector, getWatchVideo() -> { url, title }
 // Register with window.W2GAdapters.push(adapter).
 (window.W2GAdapters ||= []).push({
   name: 'youtube',
@@ -7,6 +8,14 @@
 
   // Preview thumbnails only (old + new renderers), not the watch-page or Shorts players.
   targetSelector: 'ytd-thumbnail, yt-thumbnail-view-model',
+
+  // The video page itself: the button sits on the player and adds the video being watched.
+  isWatchPage: (loc) => loc.pathname === '/watch',
+  watchTargetSelector: '#movie_player',
+  getWatchVideo() {
+    const title = document.querySelector('ytd-watch-metadata h1')?.textContent || document.title.replace(/ - YouTube$/, '');
+    return { url: location.href, title: clean(title) };
+  },
 
   getVideo(target) {
     const link = target.querySelector('a[href*="/watch?v="], a[href*="/shorts/"], a[href*="youtu.be/"]')

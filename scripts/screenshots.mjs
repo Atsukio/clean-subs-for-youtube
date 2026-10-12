@@ -25,8 +25,12 @@ if (!browser) throw new Error("Install Chrome or Edge to render the screenshots.
 // Popup preview: popup.html lives one folder below the repo root, like store-assets/, so
 // only the files next to it need re-pointing.
 const stub = `<script>
-  const sync = { settings: { hideMostRelevant: true, tabs: true, allSubsInRow: true, w2g: true } };
-  const local = { streamkey: 'example-room', apiKey: 'example' };
+  const sync = { settings: { hideWatched: true, watchedMode: 'dim', hideShortsEverywhere: true, w2g: true } };
+  const local = {
+    streamkey: 'example-room',
+    apiKey: 'example',
+    rooms: [{ name: 'Friday movie night', streamkey: 'example-room' }, { name: 'Anime club', streamkey: 'example-two' }],
+  };
   const area = (d) => ({
     get: async (k) => (Array.isArray(k) ? Object.fromEntries(k.map((x) => [x, d[x]])) : { [k]: d[k] }),
     set: async (o) => Object.assign(d, o),
@@ -51,6 +55,7 @@ const scenes = [
   ["subs", "01-subscriptions.png"],
   ["w2g", "02-watch2gether.png"],
   ["settings", "03-settings.png"],
+  ["settings-w2g", "04-settings-watch2gether.png"],
 ];
 for (const [scene, file] of scenes) {
   execFileSync(

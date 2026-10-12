@@ -15,10 +15,21 @@ no promise that every request will be added.
 - Adds a sticky **Videos | Shorts** tab bar that switches the page in place; the Videos tab hides Shorts mixed into the grid
 - Keeps "All subscriptions" on the same row as the tabs
 - Matches YouTube's light or dark theme
+- Optional filters, all off by default: dim or hide watched videos (90% or more), hide videos by title keyword or channel name, and hide videos shorter than a number of minutes you choose
+
+## All YouTube pages
+
+- **Hide Shorts everywhere**: Home, search, related videos and the sidebar entry (off by default). On the Subscriptions page the Videos | Shorts tabs keep handling Shorts while they are on
 
 ## Watch2Gether
 
-- Hover a video thumbnail and click the **W** button to add that video to your Watch2Gether room's playlist (off by default, see below)
+- Hover a video thumbnail, or the player on a video page, and click the **W** button to add that video to your Watch2Gether room's playlist (off by default, see below)
+- Save several rooms and switch the active one from the popup, or open the room in a new tab
+
+## Settings
+
+- **Pause all features** turns everything off at once without losing your settings
+- **Share settings** exports your toggles and filters as a short code and imports one from a friend. The W2G key, rooms and the W2G toggle are never included
 
 ![Illustration of the Videos and Shorts tabs on the Subscriptions page](store-assets/screenshots/01-subscriptions.png)
 
@@ -35,7 +46,7 @@ no promise that every request will be added.
 
 1. Get an API key from your Watch2Gether account's API page.
 2. Open the extension popup and switch on **Add-to-W2G button**. Chrome asks for access to `w2g.tv`; this is requested only when you turn the feature on and is handed back when you turn it off.
-3. Paste your API key and your room's streamkey or URL, then **Save**.
+3. Paste your API key and your room's streamkey or URL, then **Save**. Add more rooms the same way and pick the active one from the list.
 
 Your API key and room stay in your browser's local extension storage and are never synced. "Forget saved key and room" in the popup removes them. See [PRIVACY.md](PRIVACY.md).
 

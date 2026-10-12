@@ -14,6 +14,9 @@ friends' use (others are welcome to use it). It merges two former projects:
   to a Watch2Gether room.
 
 Every feature is an independent toggle in the popup and applies live, without a page reload.
+Features: Subscriptions page cleanup (hide shelves, Videos|Shorts tabs, watched / keyword / channel /
+length filters), hide Shorts everywhere, Watch2Gether button (thumbnails and video page) with a room
+switcher, a master pause switch, and settings export/import.
 Plain JS/CSS/HTML, no framework, no bundler. npm is for dev tooling only.
 
 The GitHub repo is still named `clean-subs-for-youtube`; `manifest.json` `homepage_url` and the
@@ -25,7 +28,8 @@ banner in the archived W2G repo point at it.
 manifest.json            MV3 manifest (version, permissions, content scripts)
 background/              service-worker.js (module): W2G requests, permission -> toggle sync
 content/
-  subs-cleaner.js/.css   Subscriptions page features (hide shelves, Videos|Shorts tabs)
+  subs-cleaner.js/.css   Subscriptions page layout features (hide shelves, Videos|Shorts tabs)
+  yt-cleanup.js/.css     hide Shorts everywhere + Subscriptions filters (watched, keyword/channel, length)
   theme.css              GENERATED M3 tokens for the tab bar
   w2g/button.js          thumbnail "W" button; enable()/disable() live
   w2g/adapters/youtube.js   site adapter (selectors + getVideo)
@@ -56,9 +60,17 @@ After a code change, reload the extension card and refresh YouTube.
 
 ## Settings and permissions model
 
-- Toggles live in `chrome.storage.sync` under key `settings` (`lib/settings.js`, defaults in
-  `EFY.DEFAULTS`). Cleaner features default **on**, `w2g` defaults **off**.
-- W2G **API key and streamkey live in `chrome.storage.local`** and must never go to sync.
+- Toggles and options live in `chrome.storage.sync` under key `settings` (`lib/settings.js`, defaults in
+  `EFY.DEFAULTS`). The original cleaner features (shelves, tabs) default **on**; everything added later
+  (filters, hide Shorts everywhere, `w2g`) defaults **off** so updates never change existing behaviour.
+- `EFY.load()` returns the *effective* settings (every feature off while `paused`); `EFY.loadRaw()` returns what
+  is stored and is what the popup edits. Content scripts must use `load()`/`onChange()`.
+- `EFY.sanitize()` validates anything imported (known keys, types, clamped numbers, capped lists). Settings
+  export/import deliberately excludes `w2g` (it depends on a per-browser permission) and never touches the
+  key or rooms. sync items are limited to 8KB, so keyword/channel lists are capped at 100 entries.
+- W2G rooms are `rooms: [{ name, streamkey }]` plus the active `streamkey`, all in `chrome.storage.local`.
+  The service worker only reads `apiKey` and `streamkey`, so room switching just changes `streamkey`.
+- W2G **API key and rooms live in `chrome.storage.local`** and must never go to sync or into exported settings.
 - `storage` is the only install-time permission. The W2G hosts (`api.w2g.tv`, `w2g.tv`,
   YouTube `oembed`) are **`optional_host_permissions`**: the popup requests them when the W2G toggle
   is switched on and removes them when it is switched off. The service worker mirrors
@@ -103,6 +115,13 @@ with **Roboto**.
   English text (`HEADINGS` at the top of `subs-cleaner.js`); this is a documented limitation.
 - Cleaner CSS is gated by classes on `<html>`: `rysl-on`, `rysl-f-blocked`, `rysl-f-tabs`,
   `rysl-mode-videos|shorts`. The `rysl-` prefix is historical; keep it.
+- Subscriptions filters tag cards with `data-efy-hide` / `data-efy-dim` (cleared when switched off). A video counts as
+  watched at 90% progress (`WATCHED_PCT`); lengths come from the time badge, so live streams and premieres are
+  never filtered by length. Title/keyword matching is substring, channel matching is an exact (case-insensitive) name.
+- "Hide Shorts everywhere" is CSS-only and steps aside on the Subscriptions page while the tabs are on
+  (`html.efy-no-shorts:not(.rysl-f-tabs)`), otherwise the Shorts tab would have nothing to show.
+- The W button also attaches to `#movie_player` on `/watch` (adapter: `isWatchPage`, `watchTargetSelector`,
+  `getWatchVideo`), controlled by the `w2gWatchPage` toggle.
 - The mutation observers are debounced and idle off the relevant pages. Keep it that way: YouTube
   mutates the DOM constantly.
 - The `All subscriptions` control is *moved* into the tab bar, so removing the bar must put it back
@@ -153,6 +172,9 @@ change it, regenerate all of `icons/icon{16,48,128}.png` and `store-assets/webst
 ## Status and ideas not yet done
 
 - Not tested end to end in Chrome by the assistant: load unpacked and check each toggle, the
-  permission prompt, and the toolbar icon sizes.
-- Possible later: popup screenshot for the listing, a script to regenerate the icon, Firefox support,
-  non-English YouTube support.
+  permission prompt, the W button on the video page, and the toolbar icon sizes. The filter logic was
+  checked against a mock Subscriptions page (a throwaway local server serving `/feed/subscriptions` with the real
+  `yt-cleanup.js` and dumping the DOM in headless Edge); real YouTube markup may differ.
+- Deliberately not built: "already added" memory for W2G (the API cannot read the playlist, so duplicates are not
+  detected).
+- Possible later: a script to regenerate the icon, Firefox support, non-English YouTube support.

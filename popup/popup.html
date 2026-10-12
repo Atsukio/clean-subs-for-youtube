@@ -10,57 +10,153 @@
 <body>
   <h1>Everything for YouTube</h1>
 
-  <section aria-labelledby="h-yt">
-    <h2 id="h-yt">YouTube</h2>
-    <h3>Subscriptions page</h3>
-    <label class="item">
-      <span class="text">Hide "Most relevant" and extra shelves</span>
-      <input type="checkbox" role="switch" data-setting="hideMostRelevant">
-    </label>
-    <label class="item">
-      <span class="text">Videos | Shorts tabs</span>
-      <input type="checkbox" role="switch" data-setting="tabs">
-    </label>
-    <label class="item nested">
-      <span class="text">Keep "All subscriptions" on the tab row</span>
-      <input type="checkbox" role="switch" data-setting="allSubsInRow">
-    </label>
-  </section>
+  <label class="item">
+    <span class="text">
+      Pause all features
+      <span class="support">Turns everything off without losing your settings.</span>
+    </span>
+    <input type="checkbox" role="switch" data-setting="paused">
+  </label>
 
-  <section aria-labelledby="h-w2g">
-    <h2 id="h-w2g">Watch2Gether</h2>
-    <label class="item">
-      <span class="text">
-        Add-to-W2G button on thumbnails
-        <span class="support" id="w2g-hint">Turning this on asks Chrome for access to w2g.tv.</span>
-      </span>
-      <input type="checkbox" role="switch" data-setting="w2g">
-    </label>
+  <main id="settings">
+    <section aria-labelledby="h-yt">
+      <h2 id="h-yt">YouTube</h2>
 
-    <div id="w2g-config" hidden>
-      <div class="field-wrap">
-        <label class="field" id="apiKey-field">
-          <input id="apiKey" type="password" autocomplete="off" spellcheck="false" placeholder=" ">
-          <span class="label">W2G API key</span>
+      <h3>Subscriptions page</h3>
+      <label class="item">
+        <span class="text">Hide "Most relevant" and extra shelves</span>
+        <input type="checkbox" role="switch" data-setting="hideMostRelevant">
+      </label>
+      <label class="item">
+        <span class="text">Videos | Shorts tabs</span>
+        <input type="checkbox" role="switch" data-setting="tabs">
+      </label>
+      <label class="item nested">
+        <span class="text">Keep "All subscriptions" on the tab row</span>
+        <input type="checkbox" role="switch" data-setting="allSubsInRow" data-needs="tabs">
+      </label>
+
+      <label class="item">
+        <span class="text">Hide watched videos</span>
+        <input type="checkbox" role="switch" data-setting="hideWatched">
+      </label>
+      <div class="detail" data-show-when="hideWatched" hidden>
+        <label class="field always">
+          <select data-value="watchedMode">
+            <option value="dim">Dim them</option>
+            <option value="hide">Hide them</option>
+          </select>
+          <span class="label">Watched videos (90% or more)</span>
         </label>
-        <p class="support" id="apiKey-help"></p>
       </div>
+
+      <label class="item">
+        <span class="text">Hide by keyword or channel</span>
+        <input type="checkbox" role="switch" data-setting="hideByText">
+      </label>
+      <div class="detail" data-show-when="hideByText" hidden>
+        <label class="field">
+          <textarea rows="3" data-list="blockedWords" spellcheck="false" placeholder=" "></textarea>
+          <span class="label">Title keywords, one per line</span>
+        </label>
+        <label class="field">
+          <textarea rows="3" data-list="blockedChannels" spellcheck="false" placeholder=" "></textarea>
+          <span class="label">Channel names, one per line</span>
+        </label>
+      </div>
+
+      <label class="item">
+        <span class="text">Hide short videos</span>
+        <input type="checkbox" role="switch" data-setting="hideShort">
+      </label>
+      <div class="detail" data-show-when="hideShort" hidden>
+        <label class="field">
+          <input type="number" min="1" max="600" data-value="minMinutes" placeholder=" ">
+          <span class="label">Shorter than (minutes)</span>
+        </label>
+      </div>
+
+      <h3>All YouTube pages</h3>
+      <label class="item">
+        <span class="text">Hide Shorts everywhere</span>
+        <input type="checkbox" role="switch" data-setting="hideShortsEverywhere">
+      </label>
+    </section>
+
+    <section aria-labelledby="h-w2g">
+      <h2 id="h-w2g">Watch2Gether</h2>
+      <label class="item">
+        <span class="text">
+          Add-to-W2G button on thumbnails
+          <span class="support" data-hide-when="w2g">Turning this on asks Chrome for access to w2g.tv.</span>
+        </span>
+        <input type="checkbox" role="switch" data-setting="w2g">
+      </label>
+
+      <div data-show-when="w2g" hidden>
+        <label class="item nested">
+          <span class="text">Also on the video page</span>
+          <input type="checkbox" role="switch" data-setting="w2gWatchPage">
+        </label>
+
+        <div class="field-wrap">
+          <label class="field" id="apiKey-field">
+            <input id="apiKey" type="password" autocomplete="off" spellcheck="false" placeholder=" ">
+            <span class="label">W2G API key</span>
+          </label>
+          <p class="support" id="apiKey-help"></p>
+        </div>
+
+        <div class="field-wrap">
+          <label class="field always">
+            <select id="room-select"></select>
+            <span class="label">Active room</span>
+          </label>
+          <div class="room-actions">
+            <a id="room-open" class="text-link" target="_blank" rel="noopener" href="#">Open room</a>
+            <button id="room-remove" class="text danger" type="button">Remove</button>
+          </div>
+        </div>
+
+        <div class="field-wrap">
+          <label class="field">
+            <input id="room-input" type="text" spellcheck="false" placeholder=" ">
+            <span class="label">Add a room (streamkey or URL)</span>
+          </label>
+        </div>
+        <div class="field-wrap">
+          <label class="field">
+            <input id="room-name" type="text" spellcheck="false" placeholder=" ">
+            <span class="label">Room name (optional)</span>
+          </label>
+          <p class="support">Saved rooms stay in this browser only.</p>
+        </div>
+
+        <div class="actions">
+          <button id="forget" class="text danger" type="button">Forget</button>
+          <span class="spacer"></span>
+          <button id="test" class="tonal" type="button">Test connection</button>
+          <button id="save" class="filled" type="button">Save</button>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="h-share">
+      <h2 id="h-share">Share settings</h2>
       <div class="field-wrap">
         <label class="field">
-          <input id="room-input" type="text" spellcheck="false" placeholder=" ">
-          <span class="label">Room streamkey or URL</span>
+          <textarea id="share" rows="3" spellcheck="false" placeholder=" "></textarea>
+          <span class="label">Settings code</span>
         </label>
-        <p class="support" id="room-help"></p>
+        <p class="support">Your toggles and filters only. The W2G key and rooms are never included.</p>
       </div>
-
       <div class="actions">
-        <button id="forget" class="text danger" type="button">Forget</button>
         <span class="spacer"></span>
-        <button id="test" class="tonal" type="button">Test connection</button>
-        <button id="save" class="filled" type="button">Save</button>
+        <button id="export" class="tonal" type="button">Export</button>
+        <button id="import" class="tonal" type="button">Import</button>
       </div>
-    </div>
-  </section>
+    </section>
+  </main>
 
   <p id="status" role="status"></p>
   <p class="footnote">Built for personal and friends' use. If it fits yours too, you're welcome to use it.</p>
