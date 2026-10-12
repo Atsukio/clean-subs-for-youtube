@@ -19,6 +19,7 @@ button.secondary { background: var(--chip); color: var(--fg); }
 button.link { flex: none; width: 100%; margin-top: 8px; padding: 4px; background: none; color: var(--muted); text-decoration: underline; }
 .room { margin: 8px 0 0; color: var(--muted); word-break: break-all; }
 .muted { margin: 2px 0 0 24px; color: var(--muted); font-size: 12px; }
+.footnote { margin: 14px 0 0; padding-top: 10px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
 #status { margin: 10px 0 0; min-height: 1em; }
 #status.error { color: #c0392b; }
 #status.ok { color: #2e9d4f; }

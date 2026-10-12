@@ -3,7 +3,7 @@
   "name": "Everything for YouTube",
   "short_name": "Everything for YT",
   "version": "1.1.0",
-  "description": "Cleans up the YouTube Subscriptions page with Videos and Shorts tabs, and adds videos to a Watch2Gether room in one click. Every feature can be switched on or off.",
+  "description": "YouTube tweaks for personal and friends' use: Videos/Shorts tabs on Subscriptions and one-click add to Watch2Gether.",
   "permissions": ["storage"],
   "optional_host_permissions": [
     "https://api.w2g.tv/*",

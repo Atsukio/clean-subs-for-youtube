@@ -2,6 +2,13 @@
 
 A Chrome extension with optional YouTube features. **Every feature can be switched on or off** from the extension's popup, and changes apply straight away without reloading the page.
 
+## About
+
+This extension is built mainly for personal and friends' use, so it does what we
+want YouTube to do and nothing more. If it happens to fit your use case too, you
+are more than welcome to use it. Issues and suggestions are welcome, but there is
+no promise that every request will be added.
+
 ## Subscriptions page
 
 - Removes the "Most relevant" section and other injected shelves
