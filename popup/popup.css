@@ -24,7 +24,7 @@ h3 {
   margin: 8px 0 0 8px;
   font: var(--md-sys-typescale-label-medium);
   letter-spacing: .5px;
-  color: var(--md-sys-color-on-surface-variant);
+  color: var(--md-sys-color-tertiary); /* a second accent, so the subsection labels stand apart from the primary-coloured group titles */
 }
 /* ---------- Collapsible groups (M3 expandable list item) ---------- */
 .group { margin: 0; }

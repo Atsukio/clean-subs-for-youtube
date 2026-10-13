@@ -110,6 +110,8 @@ with **Roboto**.
   48px) instead of the M3 default 52x32/56px.
 - Fonts are bundled locally (`popup/fonts`, Roboto, OFL licence included): the popup must not make
   network requests. The injected tab bar relies on YouTube's own already-loaded Roboto.
+- Popup colour roles: group titles (h2) use `primary` (blue), subsection labels (h3: "Subscriptions page", "Video page", ...) use
+  `tertiary` (orchid) so the two levels read differently.
 - Popup follows `prefers-color-scheme`; the tab bar follows YouTube's `html[dark]`. The bar's
   background, text and divider deliberately follow YouTube's theme so it blends into the page;
   only the controls use M3 roles.
