@@ -266,6 +266,7 @@ button.text.danger { color: var(--md-sys-color-error); }
 .detail .field { margin-top: 12px; }
 .detail .field:first-child { margin-top: 8px; }
 
+.support.hint { margin: 0 8px 4px; }
 #add-room-toggle { margin: 4px 0 0 4px; }
 .support.problem { margin: 12px 8px 0; color: var(--md-sys-color-error); }
 .room-actions { display: flex; align-items: center; justify-content: space-between; margin: 4px 8px 0; }

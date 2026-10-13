@@ -33,7 +33,7 @@ no promise that every request will be added.
 ## Settings
 
 - **Pause all features** turns everything off at once without losing your settings
-- **Share settings** exports your toggles and filters as a short code and imports one from a friend. The W2G key, rooms and the W2G toggle are never included
+- **Share settings** exports your toggles and filters as a short code and imports one from a friend. The W2G key, rooms and the two W2G switches are never included
 
 ![Illustration of the Videos and Shorts tabs on the Subscriptions page](store-assets/screenshots/01-subscriptions.png)
 
@@ -49,7 +49,7 @@ no promise that every request will be added.
 ## Watch2Gether setup
 
 1. Get an API key from your Watch2Gether account's API page.
-2. Open the extension popup and switch on **Add-to-W2G button**. Chrome asks for access to `w2g.tv`; this is requested only when you turn the feature on and is handed back when you turn it off.
+2. Open the extension popup and switch on **Button on video thumbnails**, **Button next to Like and Dislike**, or both. They are independent. Chrome asks for access to `w2g.tv` when the first one goes on, and it is handed back once both are off.
 3. Paste your API key and your room's streamkey or URL, then **Save**. Add more rooms with **Add another room** and pick the active one from the list. If an add ever fails, the Watch2Gether group in the popup shows why ("Last add failed...").
 
 Your API key and room stay in your browser's local extension storage and are never synced. "Forget saved key and room" in the popup removes them. See [PRIVACY.md](PRIVACY.md).

@@ -93,19 +93,16 @@
     <details class="group" data-group="w2g">
       <summary><img class="pixel" src="pixel/w2g.svg" alt="" width="32" height="32"><h2 id="h-w2g">Watch2Gether</h2></summary>
       <label class="item">
-        <span class="text">
-          Add-to-W2G button on thumbnails
-          <span class="support" data-hide-when="w2g">Turning this on asks Chrome for access to w2g.tv.</span>
-        </span>
-        <input type="checkbox" role="switch" data-setting="w2g">
+        <span class="text">Button on video thumbnails</span>
+        <input type="checkbox" role="switch" data-setting="w2gThumbs">
       </label>
+      <label class="item">
+        <span class="text">Button next to Like and Dislike</span>
+        <input type="checkbox" role="switch" data-setting="w2gWatchPage">
+      </label>
+      <p class="support hint" data-hide-when-any="w2gThumbs w2gWatchPage">Turning either on asks Chrome for access to w2g.tv.</p>
 
-      <div data-show-when="w2g" hidden>
-        <label class="item nested">
-          <span class="text">Also next to Like and Dislike</span>
-          <input type="checkbox" role="switch" data-setting="w2gWatchPage">
-        </label>
-
+      <div data-show-when-any="w2gThumbs w2gWatchPage" hidden>
         <div class="field-wrap">
           <label class="field" id="apiKey-field">
             <input id="apiKey" type="password" autocomplete="off" spellcheck="false" placeholder=" ">

@@ -315,12 +315,13 @@
   const removeAll = () => [...injected.keys()].forEach(remove);
   const removeKind = (kind) => [...injected].forEach(([target, info]) => { if (info.kind === kind) remove(target); });
 
-  let settings = { w2g: false, w2gWatchPage: true };
+  let settings = { w2gThumbs: false, w2gWatchPage: false };
 
   const scan = () => {
     // YouTube recycles and detaches thumbnails; forget the ones that are gone.
     for (const target of injected.keys()) if (!target.isConnected) injected.delete(target);
-    document.querySelectorAll(adapter.targetSelector).forEach((target) => inject(target));
+    if (settings.w2gThumbs) document.querySelectorAll(adapter.targetSelector).forEach((target) => inject(target));
+    else removeKind('thumb');
     // The action row on the video page, when that sub-feature is on
     if (settings.w2gWatchPage && adapter.isWatchPage?.(location)) {
       const bar = adapter.getWatchTarget?.();
@@ -376,8 +377,8 @@
 
   const applySettings = (s) => {
     settings = s;
-    setEnabled(s.w2g);
-    if (enabled) schedule(); // sub-feature changes (watch page button) need a rescan
+    setEnabled(!!(s.w2gThumbs || s.w2gWatchPage));
+    if (enabled) schedule(); // switching one of the two buttons needs a rescan
   };
   EFY.load().then(applySettings);
   EFY.onChange(applySettings);

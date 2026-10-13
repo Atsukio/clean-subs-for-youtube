@@ -16,7 +16,7 @@ The optional filters (watched videos, title keywords, channel names, minimum len
 
 ## Watch2Gether feature (off by default)
 
-This feature is off until you turn it on. Turning it on makes Chrome ask for access to `w2g.tv`, `api.w2g.tv` and YouTube's `oembed` page; turning it off hands that access back.
+This feature is off until you turn on one of its two buttons (the thumbnail button or the button next to Like and Dislike). Turning one on makes Chrome ask for access to `w2g.tv`, `api.w2g.tv` and YouTube's `oembed` page; that access is handed back once both buttons are off.
 
 When enabled, the extension handles:
 

@@ -63,11 +63,11 @@ After a code change, reload the extension card and refresh YouTube.
 
 - Toggles and options live in `chrome.storage.sync` under key `settings` (`lib/settings.js`, defaults in
   `EFY.DEFAULTS`). The original cleaner features (shelves, tabs) default **on**; everything added later
-  (filters, hide Shorts everywhere, `w2g`) defaults **off** so updates never change existing behaviour.
+  (filters, hide Ask, hide Shorts everywhere, the two W2G switches) defaults **off** so updates never change existing behaviour.
 - `EFY.load()` returns the *effective* settings (every feature off while `paused`); `EFY.loadRaw()` returns what
   is stored and is what the popup edits. Content scripts must use `load()`/`onChange()`.
 - `EFY.sanitize()` validates anything imported (known keys, types, clamped numbers, capped lists). Settings
-  export/import deliberately excludes `w2g` (it depends on a per-browser permission) and never touches the
+  export/import deliberately excludes the two W2G switches (they depend on a per-browser permission) and never touches the
   key or rooms. sync items are limited to 8KB, so keyword/channel lists are capped at 100 entries.
 - W2G rooms are `rooms: [{ name, streamkey }]` plus the active `streamkey`, all in `chrome.storage.local`. The popup keeps the
   add-room form behind an "Add another room" button (it opens by itself only when there is no room yet). The service worker
@@ -80,10 +80,12 @@ After a code change, reload the extension card and refresh YouTube.
   permission, and content-script `matches` count: `https://www.youtube.com/oembed*` falls under `https://www.youtube.com/*`, so
   the popup only removes the two w2g.tv hosts (and swallows a failed removal so the toggle can still turn off).
 - `storage` is the only install-time permission. The W2G hosts (`api.w2g.tv`, `w2g.tv`,
-  YouTube `oembed`) are **`optional_host_permissions`**: the popup requests them when the W2G toggle
-  is switched on and removes them when it is switched off. The service worker mirrors
-  `permissions.onAdded/onRemoved` into the `w2g` toggle, because Chrome can close the popup during
-  the permission prompt and permissions can be revoked from `chrome://extensions`.
+  YouTube `oembed`) are **`optional_host_permissions`**. There are two independent W2G switches, `w2gThumbs` (hover button on
+  thumbnails) and `w2gWatchPage` (button next to Like and Dislike); they were one switch `w2g` before, and `migrate()` in
+  `lib/settings.js` converts a stored `w2g` (`w2g:true` means both buttons on unless `w2gWatchPage` was false). The popup
+  requests access when either switch goes on and removes it only when BOTH are off. If access is revoked (for example from
+  `chrome://extensions`) the service worker switches both off via `permissions.onRemoved`. (It no longer switches anything
+  on from `onAdded`: it cannot know which button the user meant.) Each content script path is gated by its own switch.
 - Menu icons: `scripts/pixel-icons.mjs` (run by `npm run assets`) draws 16x16 pixel-art SVGs into `popup/pixel/` (youtube, w2g,
   share, pause) on the same navy tile as the extension icon; the popup shows them at 32x32. Edit the script, not the SVGs.
 - The popup groups (YouTube, Watch2Gether, Share settings) are collapsible `<details class="group" data-group="...">` with an M3
@@ -94,7 +96,7 @@ After a code change, reload the extension card and refresh YouTube.
   after a divider, like Watch2Gether.
 - Adding a feature: add a default to `EFY.DEFAULTS`, a switch in `popup.html` with
   `data-setting`, and gate the behaviour in the content script (see `rysl-f-*` classes in
-  `subs-cleaner.js`/`.css` and `setEnabled()` in `w2g/button.js`). It must undo itself cleanly when
+  `subs-cleaner.js`/`.css` and `setEnabled()` and the per-button gating in `scan()` in `w2g/button.js`). It must undo itself cleanly when
   switched off.
 - Anything new that sends data off the device needs a `PRIVACY.md` update and, if it needs host
   access, should be an optional permission.
@@ -138,7 +140,7 @@ with **Roboto**.
   `aria-label="Ask"` fallback, scoped to `ytd-watch-metadata`.
 - "Hide Shorts everywhere" is CSS-only and steps aside on the Subscriptions page while the tabs are on
   (`html.efy-no-shorts:not(.rysl-f-tabs)`), otherwise the Shorts tab would have nothing to show.
-- **Video-page W button** (`createNativePill()` in `content/w2g/button.js`, toggle `w2gWatchPage`). Real structure of the
+- **Video-page W button** (`createNativePill()` in `content/w2g/button.js`, switch `w2gWatchPage`). Real structure of the
   action row (verified from pasted markup): inside `ytd-menu-renderer` there are TWO containers.
   `#top-level-buttons-computed` holds the Like/Dislike group (`segmented-like-dislike-button-view-model`, plus other
   extensions' bits such as Return YouTube Dislike's rate bar), while Share, Ask, Save... live in the separate

@@ -86,14 +86,13 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   return true; // async response
 });
 
-// Keep the W2G toggle in step with the optional host permission. The popup can
-// close while Chrome shows the permission prompt, and permissions can also be
-// revoked from chrome://extensions, so the permission is the source of truth.
-async function setW2gSetting(on) {
+// If access to w2g.tv is taken away (for example from chrome://extensions) neither W2G button can work, so switch both
+// off rather than leaving them on and failing.
+async function switchW2gOff() {
   const key = 'settings';
   const current = (await chrome.storage.sync.get(key))[key] || {};
-  await chrome.storage.sync.set({ [key]: { ...current, w2g: on } });
+  const { w2g, ...rest } = current; // eslint-disable-line no-unused-vars
+  await chrome.storage.sync.set({ [key]: { ...rest, w2gThumbs: false, w2gWatchPage: false } });
 }
 const isW2g = (perms) => perms.origins?.some((o) => o.includes('api.w2g.tv'));
-chrome.permissions.onAdded.addListener((perms) => { if (isW2g(perms)) setW2gSetting(true); });
-chrome.permissions.onRemoved.addListener((perms) => { if (isW2g(perms)) setW2gSetting(false); });
+chrome.permissions.onRemoved.addListener((perms) => { if (isW2g(perms)) switchW2gOff(); });

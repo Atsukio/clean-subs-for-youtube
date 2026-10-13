@@ -3,6 +3,8 @@ const $ = (id) => document.getElementById(id);
 // Access to Watch2Gether is optional: Chrome only asks for it when the W2G
 // toggle is switched on, and it is handed back when the toggle is switched off.
 const W2G_HOSTS = ['https://api.w2g.tv/*', 'https://w2g.tv/*'];
+// The two W2G buttons each have a switch; access to w2g.tv is asked for when the first goes on and handed back once both are off
+const W2G_SWITCHES = ['w2gThumbs', 'w2gWatchPage'];
 // Requested together with the hosts above, but never removed: youtube.com is already covered by the extension's
 // required content-script access, and chrome.permissions.remove() throws "You cannot remove required permissions"
 // for anything that is.
@@ -38,6 +40,9 @@ function renderSettings(settings) {
   }
   for (const el of document.querySelectorAll('[data-show-when]')) el.hidden = !settings[el.dataset.showWhen];
   for (const el of document.querySelectorAll('[data-hide-when]')) el.hidden = !!settings[el.dataset.hideWhen];
+  const anyOn = (keys) => keys.split(' ').some((k) => settings[k]);
+  for (const el of document.querySelectorAll('[data-show-when-any]')) el.hidden = !anyOn(el.dataset.showWhenAny);
+  for (const el of document.querySelectorAll('[data-hide-when-any]')) el.hidden = anyOn(el.dataset.hideWhenAny);
   for (const el of document.querySelectorAll('[data-value]')) el.value = settings[el.dataset.value];
   for (const el of document.querySelectorAll('[data-list]')) el.value = (settings[el.dataset.list] || []).join('\n');
 }
@@ -45,7 +50,7 @@ function renderSettings(settings) {
 for (const box of document.querySelectorAll('input[data-setting]')) {
   box.addEventListener('change', async () => {
     const key = box.dataset.setting;
-    if (key === 'w2g') {
+    if (W2G_SWITCHES.includes(key)) {
       if (box.checked) {
         // Must be the first await in this handler to count as a user gesture.
         const granted = await chrome.permissions.request({ origins: [...W2G_HOSTS, OEMBED] });
@@ -54,8 +59,12 @@ for (const box of document.querySelectorAll('input[data-setting]')) {
           return say('Chrome did not grant access to w2g.tv, so the button stays off.', 'error');
         }
       } else {
-        // A failed removal must never stop the switch from turning off, so it is not allowed to throw out of here
-        try { await chrome.permissions.remove({ origins: W2G_HOSTS }); } catch (err) { console.warn('Could not remove W2G access:', err.message); }
+        // Access stays while the other W2G button is still on. A failed removal must never stop the switch from turning
+        // off, so it is not allowed to throw out of here.
+        const stored = await EFY.loadRaw();
+        if (!W2G_SWITCHES.some((k) => k !== key && stored[k])) {
+          try { await chrome.permissions.remove({ origins: W2G_HOSTS }); } catch (err) { console.warn('Could not remove W2G access:', err.message); }
+        }
       }
     }
     renderSettings(await EFY.save({ [key]: box.checked }));
@@ -192,9 +201,10 @@ $('forget').addEventListener('click', async () => {
 
 // ---------- Share settings ----------
 
-// The W2G toggle is left out both ways: it depends on a permission granted per browser.
+// The two W2G switches are left out both ways: they depend on a permission granted per browser.
 $('export').addEventListener('click', async () => {
-  const { w2g, ...shareable } = await EFY.loadRaw(); // eslint-disable-line no-unused-vars
+  const shareable = await EFY.loadRaw();
+  for (const key of W2G_SWITCHES) delete shareable[key];
   $('share').value = JSON.stringify(shareable, null, 2);
   try {
     await navigator.clipboard.writeText($('share').value);
@@ -208,7 +218,8 @@ $('export').addEventListener('click', async () => {
 $('import').addEventListener('click', async () => {
   let parsed;
   try { parsed = JSON.parse($('share').value); } catch { return say('That is not a valid settings code.', 'error'); }
-  const { w2g, ...patch } = EFY.sanitize(parsed); // eslint-disable-line no-unused-vars
+  const patch = EFY.sanitize(parsed);
+  for (const key of W2G_SWITCHES) delete patch[key];
   const count = Object.keys(patch).length;
   if (!count) return say('No settings found in that code.', 'error');
   renderSettings(await EFY.save(patch));

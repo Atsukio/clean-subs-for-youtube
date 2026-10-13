@@ -31,7 +31,7 @@ const stub = `<script>
     const show = location.hash === '#h-w2g' ? 'w2g' : 'yt';
     document.querySelectorAll('details.group').forEach((d) => { d.open = d.dataset.group === show; });
   });
-  const sync = { settings: { hideWatched: true, watchedMode: 'dim', hideShortsEverywhere: true, w2g: true } };
+  const sync = { settings: { hideWatched: true, watchedMode: 'dim', hideShortsEverywhere: true, w2gThumbs: true, w2gWatchPage: true } };
   const local = {
     streamkey: 'example-room',
     apiKey: 'example',

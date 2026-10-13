@@ -51,7 +51,8 @@ ALL YOUTUBE PAGES
 WATCH2GETHER (off by default)
 • Hover a video thumbnail and click the W button, or use the W2G button next to Like and Dislike on a video page, to add that video to your Watch2Gether room's playlist
 • Save several rooms and switch between them from the popup
-• Needs your own Watch2Gether API key and room. Chrome asks for access to w2g.tv only when you turn this on, and it is handed back when you turn it off
+• Each of the two buttons has its own switch
+• Needs your own Watch2Gether API key and room. Chrome asks for access to w2g.tv only when you turn a button on, and it is handed back when both are off
 
 SETTINGS
 • Pause all features with one switch
