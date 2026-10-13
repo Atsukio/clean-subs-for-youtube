@@ -77,6 +77,11 @@ After a code change, reload the extension card and refresh YouTube.
   is switched on and removes them when it is switched off. The service worker mirrors
   `permissions.onAdded/onRemoved` into the `w2g` toggle, because Chrome can close the popup during
   the permission prompt and permissions can be revoked from `chrome://extensions`.
+- Menu icons: `scripts/pixel-icons.mjs` (run by `npm run assets`) draws 16x16 pixel-art SVGs into `popup/pixel/` (youtube, w2g,
+  share, pause) on the same navy tile as the extension icon; the popup shows them at 32x32. Edit the script, not the SVGs.
+- The popup groups (YouTube, Watch2Gether, Share settings) are collapsible `<details class="group" data-group="...">` with an M3
+  expandable header; the open/closed state is remembered in `localStorage` (`efy-open`), YouTube open by default. A new
+  group needs a `data-group` key. The screenshot stub in `scripts/screenshots.mjs` sets which groups are open per scene.
 - Popup grouping: a "YouTube" group (h2) holds a subsection per page (h3: "Subscriptions page", "Video page", "All YouTube pages");
   new on-YouTube features go in a subsection there, and a separate service gets its own group (h2)
   after a divider, like Watch2Gether.

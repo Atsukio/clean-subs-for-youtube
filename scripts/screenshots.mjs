@@ -25,6 +25,12 @@ if (!browser) throw new Error("Install Chrome or Edge to render the screenshots.
 // Popup preview: popup.html lives one folder below the repo root, like store-assets/, so
 // only the files next to it need re-pointing.
 const stub = `<script>
+  // Which group is open: #h-w2g (the Watch2Gether scene) shows that one, anything else shows YouTube.
+  // (localStorage is not usable on file:// pages, so this sets the state directly once the page is parsed.)
+  document.addEventListener('DOMContentLoaded', () => {
+    const show = location.hash === '#h-w2g' ? 'w2g' : 'yt';
+    document.querySelectorAll('details.group').forEach((d) => { d.open = d.dataset.group === show; });
+  });
   const sync = { settings: { hideWatched: true, watchedMode: 'dim', hideShortsEverywhere: true, w2g: true } };
   const local = {
     streamkey: 'example-room',

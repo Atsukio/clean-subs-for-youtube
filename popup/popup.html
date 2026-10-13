@@ -11,6 +11,7 @@
   <h1>Everything for YouTube</h1>
 
   <label class="item">
+    <img class="pixel" src="pixel/pause.svg" alt="" width="32" height="32">
     <span class="text">
       Pause all features
       <span class="support">Turns everything off without losing your settings.</span>
@@ -19,8 +20,8 @@
   </label>
 
   <main id="settings">
-    <section aria-labelledby="h-yt">
-      <h2 id="h-yt">YouTube</h2>
+    <details class="group" data-group="yt" open>
+      <summary><img class="pixel" src="pixel/youtube.svg" alt="" width="32" height="32"><h2 id="h-yt">YouTube</h2></summary>
 
       <h3>Subscriptions page</h3>
       <label class="item">
@@ -87,10 +88,10 @@
         <span class="text">Hide Shorts everywhere</span>
         <input type="checkbox" role="switch" data-setting="hideShortsEverywhere">
       </label>
-    </section>
+    </details>
 
-    <section aria-labelledby="h-w2g">
-      <h2 id="h-w2g">Watch2Gether</h2>
+    <details class="group" data-group="w2g">
+      <summary><img class="pixel" src="pixel/w2g.svg" alt="" width="32" height="32"><h2 id="h-w2g">Watch2Gether</h2></summary>
       <label class="item">
         <span class="text">
           Add-to-W2G button on thumbnails
@@ -145,10 +146,10 @@
           <button id="save" class="filled" type="button">Save</button>
         </div>
       </div>
-    </section>
+    </details>
 
-    <section aria-labelledby="h-share">
-      <h2 id="h-share">Share settings</h2>
+    <details class="group" data-group="share">
+      <summary><img class="pixel" src="pixel/share.svg" alt="" width="32" height="32"><h2 id="h-share">Share settings</h2></summary>
       <div class="field-wrap">
         <label class="field">
           <textarea id="share" rows="3" spellcheck="false" placeholder=" "></textarea>
@@ -161,7 +162,7 @@
         <button id="export" class="tonal" type="button">Export</button>
         <button id="import" class="tonal" type="button">Import</button>
       </div>
-    </section>
+    </details>
   </main>
 
   <p id="status" role="status"></p>

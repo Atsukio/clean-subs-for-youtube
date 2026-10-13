@@ -193,5 +193,19 @@ $('import').addEventListener('click', async () => {
   say(`Imported ${count} setting${count === 1 ? '' : 's'}.`, 'ok');
 });
 
+// ---------- Collapsible groups ----------
+
+// Remember which groups are open between popup openings (browser storage can be unavailable; then the defaults apply)
+const OPEN_KEY = 'efy-open';
+let openState = {};
+try { openState = JSON.parse(localStorage.getItem(OPEN_KEY) || '{}'); } catch { /* storage unavailable */ }
+for (const group of document.querySelectorAll('details.group')) {
+  if (group.dataset.group in openState) group.open = !!openState[group.dataset.group];
+  group.addEventListener('toggle', () => {
+    openState[group.dataset.group] = group.open;
+    try { localStorage.setItem(OPEN_KEY, JSON.stringify(openState)); } catch { /* storage unavailable */ }
+  });
+}
+
 EFY.loadRaw().then(renderSettings);
 renderRoom();

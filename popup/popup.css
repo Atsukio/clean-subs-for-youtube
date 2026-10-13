@@ -14,7 +14,7 @@ body {
 
 h1 { margin: 0 0 4px 8px; font: var(--md-sys-typescale-title-medium); letter-spacing: .15px; }
 h2 {
-  margin: 16px 0 0 8px;
+  margin: 0;
   font: var(--md-sys-typescale-title-small);
   letter-spacing: .1px;
   color: var(--md-sys-color-primary);
@@ -26,11 +26,44 @@ h3 {
   letter-spacing: .5px;
   color: var(--md-sys-color-on-surface-variant);
 }
-section { margin: 0; }
+/* ---------- Collapsible groups (M3 expandable list item) ---------- */
+.group { margin: 0; }
+.group + .group { border-top: 1px solid var(--md-sys-color-outline-variant); }  /* M3 divider between groups */
+.group > summary {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  padding: 4px 8px;
+  border-radius: var(--md-sys-shape-medium);
+  list-style: none;
+  cursor: pointer;
+  user-select: none;
+}
+.group > summary::-webkit-details-marker { display: none; }
+.group > summary h2 { flex: 1; }
+/* Pixel-art menu icons: 16x16 SVGs shown at an exact 2x so the pixels stay crisp */
+.pixel { flex: none; width: 32px; height: 32px; image-rendering: pixelated; }
+.item > .pixel { margin-right: -4px; }  /* the item's 16px gap minus 4 = the 12px between icon and title used by the group headers */
+.item .text { flex: 1; }
+.group > summary::after {                      /* chevron, rotates when open */
+  content: "";
+  flex: none;
+  width: 24px;
+  height: 24px;
+  background: var(--md-sys-color-on-surface-variant);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E") center / contain no-repeat;
+  transition: transform .2s;
+}
+.group[open] > summary::after { transform: rotate(180deg); }
+.group > summary:hover { background: color-mix(in srgb, var(--md-sys-color-on-surface) var(--md-sys-state-hover), transparent); }
+.group > summary:focus-visible { outline: 3px solid var(--md-sys-color-secondary); outline-offset: -3px; }
+.group[open] > summary { margin-bottom: 4px; }
 /* A further subsection gets more room above it than the first one under the group heading */
-section > :not(h2) ~ h3 { margin-top: 16px; }
-/* M3 divider (outline-variant) between the settings groups */
-section + section { margin-top: 12px; border-top: 1px solid var(--md-sys-color-outline-variant); }
+.group > :not(summary) ~ h3 { margin-top: 16px; }
+.group:last-of-type { margin-bottom: 4px; }
 
 /* ---------- List item with a switch (compact: 48dp, the M3 minimum touch target) ---------- */
 .item {
@@ -210,7 +243,7 @@ button.text.danger { color: var(--md-sys-color-error); }
 [hidden] { display: none !important; }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before { transition: none !important; }
+  *, *::before, *::after { transition: none !important; }
 }
 
 /* ---------- Textarea, select, detail blocks ---------- */
