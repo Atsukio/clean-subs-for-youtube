@@ -69,7 +69,11 @@ After a code change, reload the extension card and refresh YouTube.
 - `EFY.sanitize()` validates anything imported (known keys, types, clamped numbers, capped lists). Settings
   export/import deliberately excludes `w2g` (it depends on a per-browser permission) and never touches the
   key or rooms. sync items are limited to 8KB, so keyword/channel lists are capped at 100 entries.
-- W2G rooms are `rooms: [{ name, streamkey }]` plus the active `streamkey`, all in `chrome.storage.local`.
+- W2G rooms are `rooms: [{ name, streamkey }]` plus the active `streamkey`, all in `chrome.storage.local`. The popup keeps the
+  add-room form behind an "Add another room" button (it opens by itself only when there is no room yet). The service worker
+  stores the last failed add as `lastError: { message, at }` (cleared on the next success) and the popup shows it, because the
+  button's own message is only visible for a few seconds (errors 8s). The add path was tested in Node with a stubbed `chrome`
+  and mocked `fetch` (success, 403, network failure, no key, Shorts URL, non-video URL); never call the real W2G API with real keys.
   The service worker only reads `apiKey` and `streamkey`, so room switching just changes `streamkey`.
 - W2G **API key and rooms live in `chrome.storage.local`** and must never go to sync or into exported settings.
 - `storage` is the only install-time permission. The W2G hosts (`api.w2g.tv`, `w2g.tv`,

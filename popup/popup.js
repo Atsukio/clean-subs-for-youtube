@@ -90,6 +90,17 @@ async function loadRooms() {
   return { rooms, active: streamkey };
 }
 
+// The "add a room" form stays behind a button, except when there is no room yet and it is the only way forward
+function setAddRoomOpen(open) {
+  $('add-room').hidden = !open;
+  $('add-room-toggle').textContent = open ? 'Cancel' : 'Add another room';
+}
+
+const ago = (at) => {
+  const minutes = Math.round((Date.now() - at) / 60000);
+  return minutes < 1 ? 'just now' : minutes < 60 ? `${minutes} min ago` : `${Math.round(minutes / 60)} h ago`;
+};
+
 async function renderRoom() {
   const { apiKey } = await chrome.storage.local.get('apiKey');
   const { rooms, active } = await loadRooms();
@@ -102,6 +113,13 @@ async function renderRoom() {
   $('room-open').hidden = !active;
   $('room-open').href = active ? `https://w2g.tv/rooms/${active}` : '#';
   $('room-remove').hidden = !active;
+  $('add-room-toggle').hidden = !rooms.length;
+  if (!rooms.length) setAddRoomOpen(true);
+
+  // The last failed "add to W2G" (kept by the service worker), so the cause is readable after the button resets
+  const { lastError } = await chrome.storage.local.get('lastError');
+  $('last-error').hidden = !lastError;
+  if (lastError) $('last-error').textContent = `Last add failed ${ago(lastError.at)}: ${lastError.message}`;
 
   // The key is never shown back; blank means "keep the saved one".
   $('apiKey').placeholder = apiKey ? '•••••• saved' : ' ';
@@ -111,6 +129,8 @@ async function renderRoom() {
     ? 'A key is saved. Leave blank to keep it.'
     : 'From your Watch2Gether account\'s API page.';
 }
+
+$('add-room-toggle').addEventListener('click', () => setAddRoomOpen($('add-room').hidden));
 
 $('room-select').addEventListener('change', async () => {
   await chrome.storage.local.set({ streamkey: $('room-select').value });
@@ -145,6 +165,7 @@ $('save').addEventListener('click', async () => {
   }
   if (!Object.keys(update).length) return say('Nothing to save.', 'error');
   await chrome.storage.local.set(update);
+  if (update.streamkey) setAddRoomOpen(false); // the new room is saved and active; fold the form away again
   $('apiKey').value = '';
   $('room-input').value = '';
   $('room-name').value = '';

@@ -24,13 +24,19 @@ async function oembedTitle(id) {
   }
 }
 
+// The last failed add is kept so the popup can show why (the button's message is gone after a few seconds)
+const fail = async (message) => {
+  await chrome.storage.local.set({ lastError: { message, at: Date.now() } });
+  return { status: 'error', message };
+};
+
 async function addVideo({ url, title }) {
   const { apiKey, streamkey } = await getSettings();
   if (!apiKey || !streamkey) {
-    return { status: 'error', message: 'Set API key and room in the extension popup.' };
+    return fail('Set API key and room in the extension popup.');
   }
   const id = canonicalId(url);
-  if (!id) return { status: 'error', message: 'Could not identify the video.' };
+  if (!id) return fail('Could not identify the video.');
 
   title = title?.trim() || (await oembedTitle(id));
   console.log('[Clean Subs] adding', id, 'with title:', title || '(none)');
@@ -49,12 +55,13 @@ async function addVideo({ url, title }) {
         : res.status === 404 ? 'Room not found (is this the streamkey?).' : '';
       const body = (await res.text().catch(() => '')).replace(/\s+/g, ' ').slice(0, 150);
       console.warn('[Clean Subs] add failed:', res.status, body);
-      return { status: 'error', message: `W2G returned ${res.status}. ${hint} ${body}`.trim() };
+      return fail(`W2G returned ${res.status}. ${hint} ${body}`.trim());
     }
   } catch (err) {
     console.warn('[Clean Subs] add failed:', err.name);
-    return { status: 'error', message: `Network error reaching W2G (${err.name}).` };
+    return fail(`Network error reaching W2G (${err.name}). Is access to w2g.tv granted? Turn the W2G switch off and on again.`);
   }
+  await chrome.storage.local.remove('lastError');
   return { status: 'added' };
 }
 

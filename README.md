@@ -50,7 +50,7 @@ no promise that every request will be added.
 
 1. Get an API key from your Watch2Gether account's API page.
 2. Open the extension popup and switch on **Add-to-W2G button**. Chrome asks for access to `w2g.tv`; this is requested only when you turn the feature on and is handed back when you turn it off.
-3. Paste your API key and your room's streamkey or URL, then **Save**. Add more rooms the same way and pick the active one from the list.
+3. Paste your API key and your room's streamkey or URL, then **Save**. Add more rooms with **Add another room** and pick the active one from the list. If an add ever fails, the Watch2Gether group in the popup shows why ("Last add failed...").
 
 Your API key and room stay in your browser's local extension storage and are never synced. "Forget saved key and room" in the popup removes them. See [PRIVACY.md](PRIVACY.md).
 

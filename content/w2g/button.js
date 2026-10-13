@@ -3,7 +3,8 @@
   if (!adapter) return;
 
   const MARK = 'data-w2g-injected';
-  const RESULT_MS = 3000; // how long the result message stays before resetting
+  const RESULT_MS = 3000; // how long a result stays before the button resets
+  const ERROR_MS = 8000;  // errors stay longer: the tooltip carries the reason
   // Two-tone "W" mark with a "+" while idle. `ink` is the colour of the "+" and the second stroke of the W.
   const icon = (ink) => `<svg viewBox="0 0 36 24" width="30" height="20" fill="none" stroke-width="3.4"
     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -168,7 +169,7 @@
         delete btn.dataset.busy;
         setState(state, title);
         clearTimeout(timer);
-        timer = setTimeout(() => setState('idle'), RESULT_MS);
+        timer = setTimeout(() => setState('idle'), state === 'error' ? ERROR_MS : RESULT_MS);
       };
       if (!video) return done('error', 'Could not find the video link.');
       btn.dataset.busy = '1';
@@ -253,7 +254,7 @@
         setState('idle');
         host.keepVisible = false;
         if (!pill && !target.matches(':hover')) host.style.display = 'none';
-      }, RESULT_MS);
+      }, state === 'error' ? ERROR_MS : RESULT_MS);
     }
 
     // Back to idle, e.g. when YouTube moves on to another video without reloading the page

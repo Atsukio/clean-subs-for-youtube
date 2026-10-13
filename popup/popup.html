@@ -125,19 +125,24 @@
           </div>
         </div>
 
-        <div class="field-wrap">
-          <label class="field">
-            <input id="room-input" type="text" spellcheck="false" placeholder=" ">
-            <span class="label">Add a room (streamkey or URL)</span>
-          </label>
+        <button id="add-room-toggle" class="text" type="button">Add another room</button>
+        <div id="add-room" hidden>
+          <div class="field-wrap">
+            <label class="field">
+              <input id="room-input" type="text" spellcheck="false" placeholder=" ">
+              <span class="label">Room streamkey or URL</span>
+            </label>
+          </div>
+          <div class="field-wrap">
+            <label class="field">
+              <input id="room-name" type="text" spellcheck="false" placeholder=" ">
+              <span class="label">Room name (optional)</span>
+            </label>
+            <p class="support">Saved rooms stay in this browser only.</p>
+          </div>
         </div>
-        <div class="field-wrap">
-          <label class="field">
-            <input id="room-name" type="text" spellcheck="false" placeholder=" ">
-            <span class="label">Room name (optional)</span>
-          </label>
-          <p class="support">Saved rooms stay in this browser only.</p>
-        </div>
+
+        <p class="support problem" id="last-error" hidden></p>
 
         <div class="actions">
           <button id="forget" class="text danger" type="button">Forget</button>
