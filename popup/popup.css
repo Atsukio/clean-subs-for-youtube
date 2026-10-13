@@ -61,6 +61,7 @@ h3 {
 .group > summary:hover { background: color-mix(in srgb, var(--md-sys-color-on-surface) var(--md-sys-state-hover), transparent); }
 .group > summary:focus-visible { outline: 3px solid var(--md-sys-color-secondary); outline-offset: -3px; }
 .group[open] > summary { margin-bottom: 4px; }
+.group[open] { padding-bottom: 8px; }      /* room below the last control before the divider / next group */
 /* A further subsection gets more room above it than the first one under the group heading */
 .group > :not(summary) ~ h3 { margin-top: 16px; }
 .group:last-of-type { margin-bottom: 4px; }
@@ -195,14 +196,14 @@ input[role="switch"]:disabled { cursor: default; opacity: .38; }
 .field-wrap > .support { margin: 4px 16px 0; }
 
 /* ---------- Buttons ---------- */
-.actions { display: flex; align-items: center; gap: 8px; margin: 16px 8px 0; }
+.actions { display: flex; align-items: center; gap: 8px; margin: 16px 8px 4px; }
 .spacer { flex: 1; }
-.actions button { padding: 0 16px; white-space: nowrap; }
+.actions button { padding: 0 14px; white-space: nowrap; }
 .actions button.text { padding: 0 8px; }
 button {
   position: relative;
-  height: 40px;
-  padding: 0 24px;
+  height: 32px;                     /* compact: the popup is dense, so buttons are one step below the M3 default 40px */
+  padding: 0 16px;
   border: 0;
   border-radius: var(--md-sys-shape-full);
   font: var(--md-sys-typescale-label-large);
@@ -224,7 +225,7 @@ button:active::before { opacity: var(--md-sys-state-pressed); }
 button:focus-visible { outline: 3px solid var(--md-sys-color-secondary); outline-offset: 2px; }
 button.filled { color: var(--md-sys-color-on-primary); background: var(--md-sys-color-primary); }
 button.tonal { color: var(--md-sys-color-on-secondary-container); background: var(--md-sys-color-secondary-container); }
-button.text { padding: 0 12px; color: var(--md-sys-color-primary); background: none; }
+button.text { padding: 0 10px; color: var(--md-sys-color-primary); background: none; }
 button.text.danger { color: var(--md-sys-color-error); }
 
 /* ---------- Status and footnote ---------- */
@@ -269,7 +270,7 @@ button.text.danger { color: var(--md-sys-color-error); }
 .support.problem { margin: 12px 8px 0; color: var(--md-sys-color-error); }
 .room-actions { display: flex; align-items: center; justify-content: space-between; margin: 4px 8px 0; }
 .text-link {
-  display: inline-flex; align-items: center; height: 40px; padding: 0 12px;
+  display: inline-flex; align-items: center; height: 32px; padding: 0 10px;
   border-radius: var(--md-sys-shape-full);
   font: var(--md-sys-typescale-label-large);
   letter-spacing: .1px;

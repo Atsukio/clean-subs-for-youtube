@@ -111,7 +111,7 @@ with **Roboto**.
 - Popup type sizes are deliberately one step down the M3 scale for a compact popup: title-medium (16px)
   heading, body-medium (14px) for list items and fields, body-small (12px) for supporting text.
   Do not go back to body-large/title-large without a reason. Switches are also compact (40x24, list rows
-  48px) instead of the M3 default 52x32/56px.
+  48px, buttons 32px high) instead of the M3 default 52x32/56px/40px.
 - Fonts are bundled locally (`popup/fonts`, Roboto, OFL licence included): the popup must not make
   network requests. The injected tab bar relies on YouTube's own already-loaded Roboto.
 - Popup colour roles: group titles (h2) use `primary` (blue), subsection labels (h3: "Subscriptions page", "Video page", ...) use
