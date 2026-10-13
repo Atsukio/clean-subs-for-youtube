@@ -203,6 +203,11 @@ change it, regenerate all of `icons/icon{16,48,128}.png` and `store-assets/webst
 
 ## Status and ideas not yet done
 
+- **Web Store:** version 1.2.0 (the merged "Everything for YouTube", with the filters, Hide Shorts everywhere, W2G rooms,
+  video-page button, Hide Ask and pause/share settings) has been uploaded by the owner. The store rejects a package whose
+  version is not higher than the last upload, so **the next change that ships must bump the version** in `manifest.json` and
+  `package.json` first (1.2.1 or higher), then `npm run package`.
+
 - Not tested end to end in Chrome by the assistant: load unpacked and check each toggle, the
   permission prompt, the W button on the video page, and the toolbar icon sizes. The filter logic was
   checked against a mock Subscriptions page (a throwaway local server serving `/feed/subscriptions` with the real
