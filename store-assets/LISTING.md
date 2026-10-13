@@ -6,7 +6,7 @@ Values to enter in the Chrome Web Store developer dashboard. Keep in sync with `
 ## Package
 
 - Upload: `dist/everything-for-youtube-<version>.zip` (`npm run package`)
-- Version: must be higher than the published one (currently 1.2.0; earlier releases 1.0.0 and 1.1.0)
+- Version: must be higher than the published one (1.2.0 is the last one uploaded; earlier 1.0.0 and 1.1.0; 1.2.1 is ready to upload)
 
 ## Store listing
 
