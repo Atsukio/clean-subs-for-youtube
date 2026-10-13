@@ -42,6 +42,9 @@ SUBSCRIPTIONS PAGE
 • Keeps "All subscriptions" on the same row as the tabs
 • Optional filters (off by default): dim or hide watched videos, hide videos by title keyword or channel name, hide videos shorter than a length you choose
 
+VIDEO PAGE
+• Hide the Ask (Gemini) button in the action row (off by default)
+
 ALL YOUTUBE PAGES
 • Hide Shorts everywhere: Home, search, related videos and the sidebar (off by default)
 

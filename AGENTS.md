@@ -15,7 +15,7 @@ friends' use (others are welcome to use it). It merges two former projects:
 
 Every feature is an independent toggle in the popup and applies live, without a page reload.
 Features: Subscriptions page cleanup (hide shelves, Videos|Shorts tabs, watched / keyword / channel /
-length filters), hide Shorts everywhere, Watch2Gether button (thumbnails and video page) with a room
+length filters), hide the Ask (Gemini) button, hide Shorts everywhere, Watch2Gether button (thumbnails and video page) with a room
 switcher, a master pause switch, and settings export/import.
 Plain JS/CSS/HTML, no framework, no bundler. npm is for dev tooling only.
 
@@ -77,7 +77,7 @@ After a code change, reload the extension card and refresh YouTube.
   is switched on and removes them when it is switched off. The service worker mirrors
   `permissions.onAdded/onRemoved` into the `w2g` toggle, because Chrome can close the popup during
   the permission prompt and permissions can be revoked from `chrome://extensions`.
-- Popup grouping: a "YouTube" group (h2) holds a subsection per page (h3, currently "Subscriptions page");
+- Popup grouping: a "YouTube" group (h2) holds a subsection per page (h3: "Subscriptions page", "Video page", "All YouTube pages");
   new on-YouTube features go in a subsection there, and a separate service gets its own group (h2)
   after a divider, like Watch2Gether.
 - Adding a feature: add a default to `EFY.DEFAULTS`, a switch in `popup.html` with
@@ -119,16 +119,24 @@ with **Roboto**.
 - Subscriptions filters tag cards with `data-efy-hide` / `data-efy-dim` (cleared when switched off). A video counts as
   watched at 90% progress (`WATCHED_PCT`); lengths come from the time badge, so live streams and premieres are
   never filtered by length. Title/keyword matching is substring, channel matching is an exact (case-insensitive) name.
+- "Hide the Ask button" is CSS-only (`html.efy-no-ask`): it hides `yt-button-view-model` wrappers that contain
+  `.you-chat-entrypoint-button` (a language-independent marker class on the Ask button's `button-view-model`), with an
+  `aria-label="Ask"` fallback, scoped to `ytd-watch-metadata`.
 - "Hide Shorts everywhere" is CSS-only and steps aside on the Subscriptions page while the tabs are on
   (`html.efy-no-shorts:not(.rysl-f-tabs)`), otherwise the Shorts tab would have nothing to show.
 - **Video-page W button** (`createNativePill()` in `content/w2g/button.js`, toggle `w2gWatchPage`). Real structure of the
   action row (verified from pasted markup): inside `ytd-menu-renderer` there are TWO containers.
-  `#top-level-buttons-computed` holds only the Like/Dislike group (`segmented-like-dislike-button-view-model`, plus
-  other extensions' bits such as Return YouTube Dislike's rate bar), while Share, Ask, Save... live in the separate
-  `#flexible-item-buttons` as `yt-button-view-model.ytd-menu-renderer > button-view-model > button`. The adapter's
-  `getWatchTarget()` returns `#flexible-item-buttons` (falling back to `#top-level-buttons-computed` on a one-row layout)
-  and the pill goes in as its **first child**, i.e. straight after the like group. Searching the like container for a
-  button to copy finds only Like/Dislike (excluded), which silently produced the shadow fallback: do not do that.
+  `#top-level-buttons-computed` holds the Like/Dislike group (`segmented-like-dislike-button-view-model`, plus other
+  extensions' bits such as Return YouTube Dislike's rate bar), while Share, Ask, Save... live in the separate
+  `#flexible-item-buttons` as `yt-button-view-model.ytd-menu-renderer > button-view-model > button`.
+  **Placement: right after the like group, in `#top-level-buttons-computed`** (adapter `getWatchTarget()`). Do NOT put
+  it in `#flexible-item-buttons`: YouTube manages that container (it decides which buttons fit and moves the rest into the
+  "..." menu, and rebuilds it on resize), and a foreign button there pushed Save into the menu and was removed on
+  re-render (reported on the real page).
+  The style source is a real button anywhere in the menu (`scope = bar.closest('ytd-menu-renderer')`), skipping the like group,
+  icon-only buttons and our own, so the Share button is found even though it is in the other container. Searching only
+  the like container finds nothing and silently produced the shadow fallback: do not do that.
+  The row can still overflow on a narrow window because our button takes width; that is YouTube's own responsive logic.
 - It is built from a real sibling button (Share...): class names copied at runtime, and the same **wrapper chain**
   (`yt-button-view-model` > `button-view-model`, element names and classes), so YouTube's own CSS (size M = 40px high, 20px
   radius, tonal/mono colours, light/dark) and the row's spacing rule (keyed on `yt-button-view-model.ytd-menu-renderer`) apply

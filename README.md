@@ -17,6 +17,10 @@ no promise that every request will be added.
 - Matches YouTube's light or dark theme
 - Optional filters, all off by default: dim or hide watched videos (90% or more), hide videos by title keyword or channel name, and hide videos shorter than a number of minutes you choose
 
+## Video page
+
+- **Hide the Ask (Gemini) button** in the action row under the video (off by default)
+
 ## All YouTube pages
 
 - **Hide Shorts everywhere**: Home, search, related videos and the sidebar entry (off by default). On the Subscriptions page the Videos | Shorts tabs keep handling Shorts while they are on

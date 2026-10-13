@@ -20,6 +20,13 @@ html.efy-no-shorts ytd-mini-guide-entry-renderer[aria-label="Shorts"] {
   display: none !important;
 }
 
+/* Hide the "Ask" (Gemini) button in the video page's action row. The marker class is language independent; the
+   aria-label match is a fallback for markup that drops it. */
+html.efy-no-ask ytd-watch-metadata yt-button-view-model:has(.you-chat-entrypoint-button),
+html.efy-no-ask ytd-watch-metadata yt-button-view-model:has(button[aria-label="Ask"]) {
+  display: none !important;
+}
+
 /* Subscriptions filters (data attributes are set by yt-cleanup.js) */
 ytd-browse[page-subtype="subscriptions"] [data-efy-hide] {
   display: none !important;

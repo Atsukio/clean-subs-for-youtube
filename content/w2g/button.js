@@ -69,8 +69,11 @@
     'like-button-view-model, dislike-button-view-model, .' + OUR_CLASS;
 
   function createNativePill(bar, readVideo) {
-    const sibling = [...bar.querySelectorAll('button')].find(
-      (b) => SHAPE_CLASS.test(b.className) && !b.closest(NOT_SIBLING)
+    // Copy from a real button anywhere in the action menu (Share, Ask, Save... sit in a different container than the
+    // one we are placed in), skipping the like group, icon-only buttons and anything of ours.
+    const scope = bar.closest('ytd-menu-renderer') || bar;
+    const sibling = [...scope.querySelectorAll('button')].find(
+      (b) => SHAPE_CLASS.test(b.className) && !/IconButton/i.test(b.className) && !b.closest(NOT_SIBLING)
     );
     if (!sibling) return null;
     const classOf = (selector) => sibling.querySelector(selector)?.className || '';
@@ -78,7 +81,8 @@
     // Rebuild the wrapper chain the real button sits in (yt-button-view-model > button-view-model), element names and
     // classes included, so YouTube's own styling and spacing rules for those apply to our button as well.
     const chain = [];
-    for (let el = sibling.parentElement; el && el !== bar; el = el.parentElement) chain.unshift(el);
+    const row = sibling.closest('#flexible-item-buttons, #top-level-buttons-computed') || bar;
+    for (let el = sibling.parentElement; el && el !== row; el = el.parentElement) chain.unshift(el);
     let host = null;
     let holder = null;
     for (const original of chain) {
@@ -182,27 +186,23 @@
     return { host, reset };
   }
 
-  // Make the gaps either side of our pill equal the gap YouTube leaves between its own buttons, measured in pixels,
-  // so it holds whatever creates that spacing (margins on either neighbour, flex gap...). With the rebuilt wrapper this
-  // is normally already right and nothing changes.
+  // Make the gap between the like group and our pill equal the gap YouTube leaves between its own buttons (Share, Ask,
+  // Save...), measured in pixels. With the rebuilt wrapper chain this is normally already right and nothing changes.
   function matchSpacing(host) {
     const rect = (el) => el.getBoundingClientRect();
-    const visible = (el) => el && rect(el).width > 0;
-    const prev = host.previousElementSibling;
-    const next = host.nextElementSibling;
-    let target = 8; // YouTube's usual gap, used when there is no pair of its own buttons to measure
-    for (let el = next; visible(el) && visible(el.nextElementSibling); el = el.nextElementSibling) {
-      const gap = rect(el.nextElementSibling).left - rect(el).right;
-      if (gap >= 0 && gap <= 32) { target = gap; break; }
+    const prev = host.previousElementSibling; // the like group
+    if (!prev || rect(prev).width === 0) return;
+    if (Math.abs((rect(prev).top + rect(prev).bottom) - (rect(host).top + rect(host).bottom)) > 20) return; // wrapped to another row
+    let target = 8; // YouTube's usual gap, used if there is no pair of its own buttons to measure
+    const own = [...(host.closest('ytd-menu-renderer')?.querySelectorAll('#flexible-item-buttons > *') || [])]
+      .filter((el) => rect(el).width > 0);
+    if (own.length > 1) {
+      const gap = rect(own[1]).left - rect(own[0]).right;
+      if (gap >= 0 && gap <= 32) target = gap;
     }
-    const adjust = (side, gap) => {
-      const current = parseFloat(getComputedStyle(host)[side]) || 0;
-      const wanted = Math.max(0, current + target - gap);
-      if (Math.abs(wanted - current) > 0.5) host.style[side] = wanted + 'px';
-    };
-    const sameRow = (el) => Math.abs((rect(el).top + rect(el).bottom) - (rect(host).top + rect(host).bottom)) < 20;
-    if (visible(prev) && sameRow(prev)) adjust('marginLeft', rect(host).left - rect(prev).right);
-    if (visible(next) && sameRow(next)) adjust('marginRight', rect(next).left - rect(host).right);
+    const current = parseFloat(getComputedStyle(host).marginLeft) || 0;
+    const wanted = Math.max(0, current + target - (rect(host).left - rect(prev).right));
+    if (Math.abs(wanted - current) > 0.5) host.style.marginLeft = wanted + 'px';
   }
 
   // variant: 'thumb' (hover overlay on a thumbnail) or 'pill' (video page action row)
@@ -266,14 +266,9 @@
   // target -> what was added for it, so switching the feature off can undo everything.
   const injected = new Map();
 
-  // Where the pill goes: first in #flexible-item-buttons, i.e. straight after the Like/Dislike group and before Share.
-  // (On a layout where everything is in one row it goes right after the like group, or first.) Safe to call
+  // The pill sits right after the Like/Dislike group, or first in the row if that can't be found. Safe to call
   // repeatedly: it only touches the DOM when the pill is not already in the right place.
   function placePill(bar, host) {
-    if (bar.id === 'flexible-item-buttons') {
-      if (bar.firstElementChild !== host) bar.prepend(host);
-      return;
-    }
     const likes = bar.querySelector('segmented-like-dislike-button-view-model, ytd-segmented-like-dislike-button-renderer');
     if (likes) {
       if (likes.nextElementSibling !== host) likes.after(host);

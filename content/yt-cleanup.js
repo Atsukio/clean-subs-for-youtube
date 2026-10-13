@@ -77,6 +77,7 @@
 
   function apply() {
     document.documentElement.classList.toggle("efy-no-shorts", !!settings.hideShortsEverywhere);
+    document.documentElement.classList.toggle("efy-no-ask", !!settings.hideAsk);
     filterSubscriptions();
   }
 
