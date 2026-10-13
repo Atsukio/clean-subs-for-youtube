@@ -2,11 +2,11 @@ const $ = (id) => document.getElementById(id);
 
 // Access to Watch2Gether is optional: Chrome only asks for it when the W2G
 // toggle is switched on, and it is handed back when the toggle is switched off.
-const W2G_ORIGINS = [
-  'https://api.w2g.tv/*',
-  'https://w2g.tv/*',
-  'https://www.youtube.com/oembed*',
-];
+const W2G_HOSTS = ['https://api.w2g.tv/*', 'https://w2g.tv/*'];
+// Requested together with the hosts above, but never removed: youtube.com is already covered by the extension's
+// required content-script access, and chrome.permissions.remove() throws "You cannot remove required permissions"
+// for anything that is.
+const OEMBED = 'https://www.youtube.com/oembed*';
 
 // Accepts a raw streamkey or a w2g.tv room URL: /rooms/<key>,
 // or /room/?room_id=<key>. (?access_key= links are not accepted.)
@@ -48,13 +48,14 @@ for (const box of document.querySelectorAll('input[data-setting]')) {
     if (key === 'w2g') {
       if (box.checked) {
         // Must be the first await in this handler to count as a user gesture.
-        const granted = await chrome.permissions.request({ origins: W2G_ORIGINS });
+        const granted = await chrome.permissions.request({ origins: [...W2G_HOSTS, OEMBED] });
         if (!granted) {
           box.checked = false;
           return say('Chrome did not grant access to w2g.tv, so the button stays off.', 'error');
         }
       } else {
-        await chrome.permissions.remove({ origins: W2G_ORIGINS });
+        // A failed removal must never stop the switch from turning off, so it is not allowed to throw out of here
+        try { await chrome.permissions.remove({ origins: W2G_HOSTS }); } catch (err) { console.warn('Could not remove W2G access:', err.message); }
       }
     }
     renderSettings(await EFY.save({ [key]: box.checked }));

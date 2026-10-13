@@ -76,6 +76,9 @@ After a code change, reload the extension card and refresh YouTube.
   and mocked `fetch` (success, 403, network failure, no key, Shorts URL, non-video URL); never call the real W2G API with real keys.
   The service worker only reads `apiKey` and `streamkey`, so room switching just changes `streamkey`.
 - W2G **API key and rooms live in `chrome.storage.local`** and must never go to sync or into exported settings.
+- `chrome.permissions.remove()` throws "You cannot remove required permissions" for any origin already covered by a required
+  permission, and content-script `matches` count: `https://www.youtube.com/oembed*` falls under `https://www.youtube.com/*`, so
+  the popup only removes the two w2g.tv hosts (and swallows a failed removal so the toggle can still turn off).
 - `storage` is the only install-time permission. The W2G hosts (`api.w2g.tv`, `w2g.tv`,
   YouTube `oembed`) are **`optional_host_permissions`**: the popup requests them when the W2G toggle
   is switched on and removes them when it is switched off. The service worker mirrors
