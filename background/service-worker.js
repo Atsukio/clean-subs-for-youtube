@@ -86,13 +86,41 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   return true; // async response
 });
 
-// If access to w2g.tv is taken away (for example from chrome://extensions) neither W2G button can work, so switch both
+// If access to w2g.tv is taken away (for example from chrome://extensions) no W2G feature can work, so switch them all
 // off rather than leaving them on and failing.
 async function switchW2gOff() {
   const key = 'settings';
   const current = (await chrome.storage.sync.get(key))[key] || {};
   const { w2g, ...rest } = current; // eslint-disable-line no-unused-vars
-  await chrome.storage.sync.set({ [key]: { ...rest, w2gThumbs: false, w2gWatchPage: false } });
+  await chrome.storage.sync.set({ [key]: { ...rest, w2gThumbs: false, w2gWatchPage: false, w2gRoomTab: 'off' } });
 }
 const isW2g = (perms) => perms.origins?.some((o) => o.includes('api.w2g.tv'));
 chrome.permissions.onRemoved.addListener((perms) => { if (isW2g(perms)) switchW2gOff(); });
+
+// The room-tab script is not in the manifest: a w2g.tv content script there would be an install-time permission and would
+// disable the extension for existing users until they re-accept. Instead it is registered here, only while access to
+// w2g.tv is granted and a default tab is chosen.
+const ROOM_SCRIPT = 'efy-w2g-room';
+async function syncRoomScript() {
+  const { settings } = await chrome.storage.sync.get('settings');
+  const wanted = !!settings?.w2gRoomTab && settings.w2gRoomTab !== 'off'
+    && await chrome.permissions.contains({ origins: ['https://w2g.tv/*'] });
+  const registered = (await chrome.scripting.getRegisteredContentScripts({ ids: [ROOM_SCRIPT] })).length > 0;
+  if (wanted && !registered) {
+    await chrome.scripting.registerContentScripts([{
+      id: ROOM_SCRIPT,
+      matches: ['https://w2g.tv/room/*', 'https://w2g.tv/*/room/*'],
+      js: ['lib/settings.js', 'content/w2g/room.js'],
+      runAt: 'document_idle',
+      persistAcrossSessions: true,
+    }]);
+  } else if (!wanted && registered) {
+    await chrome.scripting.unregisterContentScripts({ ids: [ROOM_SCRIPT] });
+  }
+}
+const safeSync = () => syncRoomScript().catch((err) => console.warn('Room script sync failed:', err.message));
+chrome.runtime.onInstalled.addListener(safeSync);
+chrome.runtime.onStartup.addListener(safeSync);
+chrome.permissions.onAdded.addListener(safeSync);
+chrome.permissions.onRemoved.addListener(safeSync);
+chrome.storage.onChanged.addListener((changes, area) => { if (area === 'sync' && changes.settings) safeSync(); });

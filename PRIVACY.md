@@ -1,6 +1,6 @@
 # Privacy Policy
 
-Effective date: October 13, 2026
+Effective date: October 14, 2026
 
 Everything for YouTube adds optional features to YouTube in your browser: a cleaner Subscriptions page, filters for videos and Shorts, and an "add to Watch2Gether" button on video thumbnails and on the video page. Each feature can be switched on or off in the extension's popup. This policy describes the information the extension handles.
 
@@ -16,7 +16,7 @@ The optional filters (watched videos, title keywords, channel names, minimum len
 
 ## Watch2Gether feature (off by default)
 
-This feature is off until you turn on one of its two buttons (the thumbnail button or the button next to Like and Dislike). Turning one on makes Chrome ask for access to `w2g.tv`, `api.w2g.tv` and YouTube's `oembed` page; that access is handed back once both buttons are off.
+This feature is off until you turn on one of its two buttons (the thumbnail button or the button next to Like and Dislike) or pick a default room tab. Turning one on makes Chrome ask for access to `w2g.tv`, `api.w2g.tv` and YouTube's `oembed` page; that access is handed back once all of them are off.
 
 When enabled, the extension handles:
 
@@ -24,6 +24,7 @@ When enabled, the extension handles:
 - **The video URL, title and thumbnail address** of the video you click the button on, on a thumbnail or on the video page. When you click, these are sent to the Watch2Gether API at `api.w2g.tv` together with your API key, so the video is added to your room's playlist.
 - **The video URL**, sent to YouTube's public `oembed` service only when a title cannot be read from the page.
 - **A request to your room page** at `w2g.tv` when you use "Test connection".
+- **Your room page itself**, when you choose a default room tab: a small script runs on `w2g.tv` room pages and only clicks the Chat, Playlist or History tab. It reads nothing from the room and sends nothing anywhere.
 
 Watch2Gether's own privacy policy applies to the information you send to it.
 

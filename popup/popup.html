@@ -100,7 +100,18 @@
         <span class="text">Button next to Like and Dislike</span>
         <input type="checkbox" role="switch" data-setting="w2gWatchPage">
       </label>
-      <p class="support hint" data-hide-when-any="w2gThumbs w2gWatchPage">Turning either on asks Chrome for access to w2g.tv.</p>
+      <div class="field-wrap">
+        <label class="field always">
+          <select data-value="w2gRoomTab">
+            <option value="off">Don't change</option>
+            <option value="chat">Chat</option>
+            <option value="playlist">Playlist</option>
+            <option value="history">History</option>
+          </select>
+          <span class="label">Tab to open in a room</span>
+        </label>
+      </div>
+      <p class="support hint" data-hide-when-any="w2gThumbs w2gWatchPage w2gRoomTab">Turning any of these on asks Chrome for access to w2g.tv.</p>
 
       <div data-show-when-any="w2gThumbs w2gWatchPage" hidden>
         <div class="field-wrap">

@@ -29,6 +29,7 @@ no promise that every request will be added.
 
 - Hover a video thumbnail and click the **W** button, or use the **W2G** button next to Like and Dislike on a video page, to add that video to your Watch2Gether room's playlist (off by default, see below)
 - Save several rooms and switch the active one from the popup, or open the room in a new tab
+- Choose which sidebar tab a room opens on (Chat, Playlist or History)
 
 ## Settings
 
@@ -80,7 +81,7 @@ for the project's conventions and decisions.
 manifest.json
 background/   service worker (Watch2Gether requests, permission sync)
 content/      subs-cleaner.*  Subscriptions page features
-              w2g/            thumbnail button and site adapter
+              w2g/            thumbnail button, site adapter, room tab (room.js)
 popup/        settings popup
 lib/          settings.js (feature toggles), ids.js
 store-assets/ Web Store icon and screenshot source

@@ -52,6 +52,7 @@ WATCH2GETHER (off by default)
 • Hover a video thumbnail and click the W button, or use the W2G button next to Like and Dislike on a video page, to add that video to your Watch2Gether room's playlist
 • Save several rooms and switch between them from the popup
 • Each of the two buttons has its own switch
+• Pick which tab (Chat, Playlist or History) a Watch2Gether room opens on
 • Needs your own Watch2Gether API key and room. Chrome asks for access to w2g.tv only when you turn a button on, and it is handed back when both are off
 
 SETTINGS
@@ -82,10 +83,12 @@ GOOD TO KNOW
 - **storage:** Saves the user's feature toggles and filter lists (chrome.storage.sync) and, for the
   optional Watch2Gether feature, the user's own API key and saved rooms (chrome.storage.local, never
   synced).
+- **scripting:** Registers the small "default room tab" content script on w2g.tv room pages, only while the user has
+  granted w2g.tv access and chosen a tab. It is not declared in the manifest so that no w2g.tv access is required at install.
 - **Host access to www.youtube.com (content scripts):** Needed to tidy and filter the Subscriptions
   page, hide Shorts, and add the Watch2Gether button to video thumbnails and next to Like and Dislike on the video page.
 - **Optional host access to api.w2g.tv and w2g.tv:** Requested only when the user turns on the
-  Watch2Gether feature. Used to add the chosen video to the user's room and to test the connection.
+  Watch2Gether feature. Used to add the chosen video to the user's room, to test the connection and, if chosen, to open the room on the Chat, Playlist or History tab.
 - **Optional host access to www.youtube.com/oembed:** Same optional request. Used only to look up a
   video's title when the page does not provide one.
 - **Remote code:** No. All code is in the package.

@@ -30,8 +30,10 @@ const stub = `<script>
   document.addEventListener('DOMContentLoaded', () => {
     const show = location.hash === '#h-w2g' ? 'w2g' : 'yt';
     document.querySelectorAll('details.group').forEach((d) => { d.open = d.dataset.group === show; });
+    // the hash scroll puts the heading flush with the top edge; leave room above it
+    if (show === 'w2g') setTimeout(() => window.scrollBy(0, -24), 50);
   });
-  const sync = { settings: { hideWatched: true, watchedMode: 'dim', hideShortsEverywhere: true, w2gThumbs: true, w2gWatchPage: true } };
+  const sync = { settings: { hideWatched: true, watchedMode: 'dim', hideShortsEverywhere: true, w2gThumbs: true, w2gWatchPage: true, w2gRoomTab: 'chat' } };
   const local = {
     streamkey: 'example-room',
     apiKey: 'example',

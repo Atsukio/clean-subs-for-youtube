@@ -5,6 +5,20 @@ const $ = (id) => document.getElementById(id);
 const W2G_HOSTS = ['https://api.w2g.tv/*', 'https://w2g.tv/*'];
 // The two W2G buttons each have a switch; access to w2g.tv is asked for when the first goes on and handed back once both are off
 const W2G_SWITCHES = ['w2gThumbs', 'w2gWatchPage'];
+// ...and the default room tab (a dropdown, 'off' = unused) needs the same access
+const W2G_FEATURES = [...W2G_SWITCHES, 'w2gRoomTab'];
+const w2gOn = (s, key) => (key === 'w2gRoomTab' ? s[key] !== 'off' : !!s[key]);
+
+// Asks for w2g.tv access when a W2G option goes on (call it first in the handler so it counts as a user gesture) and
+// hands it back once the last one is off. A failed removal must never stop the option from turning off.
+async function syncW2gAccess(key, on) {
+  if (on) return chrome.permissions.request({ origins: [...W2G_HOSTS, OEMBED] });
+  const stored = await EFY.loadRaw();
+  if (!W2G_FEATURES.some((k) => k !== key && w2gOn(stored, k))) {
+    try { await chrome.permissions.remove({ origins: W2G_HOSTS }); } catch (err) { console.warn('Could not remove W2G access:', err.message); }
+  }
+  return true;
+}
 // Requested together with the hosts above, but never removed: youtube.com is already covered by the extension's
 // required content-script access, and chrome.permissions.remove() throws "You cannot remove required permissions"
 // for anything that is.
@@ -40,7 +54,7 @@ function renderSettings(settings) {
   }
   for (const el of document.querySelectorAll('[data-show-when]')) el.hidden = !settings[el.dataset.showWhen];
   for (const el of document.querySelectorAll('[data-hide-when]')) el.hidden = !!settings[el.dataset.hideWhen];
-  const anyOn = (keys) => keys.split(' ').some((k) => settings[k]);
+  const anyOn = (keys) => keys.split(' ').some((k) => w2gOn(settings, k));
   for (const el of document.querySelectorAll('[data-show-when-any]')) el.hidden = !anyOn(el.dataset.showWhenAny);
   for (const el of document.querySelectorAll('[data-hide-when-any]')) el.hidden = anyOn(el.dataset.hideWhenAny);
   for (const el of document.querySelectorAll('[data-value]')) el.value = settings[el.dataset.value];
@@ -50,22 +64,9 @@ function renderSettings(settings) {
 for (const box of document.querySelectorAll('input[data-setting]')) {
   box.addEventListener('change', async () => {
     const key = box.dataset.setting;
-    if (W2G_SWITCHES.includes(key)) {
-      if (box.checked) {
-        // Must be the first await in this handler to count as a user gesture.
-        const granted = await chrome.permissions.request({ origins: [...W2G_HOSTS, OEMBED] });
-        if (!granted) {
-          box.checked = false;
-          return say('Chrome did not grant access to w2g.tv, so the button stays off.', 'error');
-        }
-      } else {
-        // Access stays while the other W2G button is still on. A failed removal must never stop the switch from turning
-        // off, so it is not allowed to throw out of here.
-        const stored = await EFY.loadRaw();
-        if (!W2G_SWITCHES.some((k) => k !== key && stored[k])) {
-          try { await chrome.permissions.remove({ origins: W2G_HOSTS }); } catch (err) { console.warn('Could not remove W2G access:', err.message); }
-        }
-      }
+    if (W2G_SWITCHES.includes(key) && !(await syncW2gAccess(key, box.checked))) {
+      box.checked = false;
+      return say('Chrome did not grant access to w2g.tv, so the button stays off.', 'error');
     }
     renderSettings(await EFY.save({ [key]: box.checked }));
     say('');
@@ -75,6 +76,10 @@ for (const box of document.querySelectorAll('input[data-setting]')) {
 // Selects and number fields save as soon as they change
 for (const el of document.querySelectorAll('[data-value]')) {
   el.addEventListener('change', async () => {
+    if (el.dataset.value === 'w2gRoomTab' && !(await syncW2gAccess('w2gRoomTab', el.value !== 'off'))) {
+      el.value = (await EFY.loadRaw()).w2gRoomTab;
+      return say('Chrome did not grant access to w2g.tv, so the room tab stays as it was.', 'error');
+    }
     const patch = EFY.sanitize({ [el.dataset.value]: el.type === 'number' ? Number(el.value) : el.value });
     renderSettings(await EFY.save(patch)); // re-render shows the value that was actually kept
   });
@@ -204,7 +209,7 @@ $('forget').addEventListener('click', async () => {
 // The two W2G switches are left out both ways: they depend on a permission granted per browser.
 $('export').addEventListener('click', async () => {
   const shareable = await EFY.loadRaw();
-  for (const key of W2G_SWITCHES) delete shareable[key];
+  for (const key of W2G_FEATURES) delete shareable[key];
   $('share').value = JSON.stringify(shareable, null, 2);
   try {
     await navigator.clipboard.writeText($('share').value);
@@ -219,7 +224,7 @@ $('import').addEventListener('click', async () => {
   let parsed;
   try { parsed = JSON.parse($('share').value); } catch { return say('That is not a valid settings code.', 'error'); }
   const patch = EFY.sanitize(parsed);
-  for (const key of W2G_SWITCHES) delete patch[key];
+  for (const key of W2G_FEATURES) delete patch[key];
   const count = Object.keys(patch).length;
   if (!count) return say('No settings found in that code.', 'error');
   renderSettings(await EFY.save(patch));

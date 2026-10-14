@@ -33,6 +33,7 @@ content/
   yt-cleanup.js/.css     hide Shorts everywhere + Subscriptions filters (watched, keyword/channel, length)
   theme.css              GENERATED M3 tokens for the tab bar
   w2g/button.js          thumbnail "W" button; enable()/disable() live
+  w2g/room.js            clicks the chosen sidebar tab on w2g.tv rooms (registered at runtime, not in the manifest)
   w2g/adapters/youtube.js   site adapter (selectors + getVideo)
 popup/                   settings popup (popup.html/css/js)
   theme.css              GENERATED M3 tokens for the popup
@@ -79,13 +80,23 @@ After a code change, reload the extension card and refresh YouTube.
 - `chrome.permissions.remove()` throws "You cannot remove required permissions" for any origin already covered by a required
   permission, and content-script `matches` count: `https://www.youtube.com/oembed*` falls under `https://www.youtube.com/*`, so
   the popup only removes the two w2g.tv hosts (and swallows a failed removal so the toggle can still turn off).
-- `storage` is the only install-time permission. The W2G hosts (`api.w2g.tv`, `w2g.tv`,
+- `storage` and `scripting` are the install-time permissions (`scripting` has no install warning, so adding it did not disable
+  existing installs; do NOT add a w2g.tv `content_scripts` entry or any install-time host permission, that would). The W2G hosts (`api.w2g.tv`, `w2g.tv`,
   YouTube `oembed`) are **`optional_host_permissions`**. There are two independent W2G switches, `w2gThumbs` (hover button on
   thumbnails) and `w2gWatchPage` (button next to Like and Dislike); they were one switch `w2g` before, and `migrate()` in
   `lib/settings.js` converts a stored `w2g` (`w2g:true` means both buttons on unless `w2gWatchPage` was false). The popup
   requests access when either switch goes on and removes it only when BOTH are off. If access is revoked (for example from
   `chrome://extensions`) the service worker switches both off via `permissions.onRemoved`. (It no longer switches anything
   on from `onAdded`: it cannot know which button the user meant.) Each content script path is gated by its own switch.
+- **Default room tab** (`w2gRoomTab`: off | chat | playlist | history, popup dropdown in the Watch2Gether group). It is a third W2G
+  option for permission purposes (`W2G_FEATURES`, `syncW2gAccess()` in `popup.js`: access is requested when any goes on and
+  removed only when all are off; it is excluded from export/import; `switchW2gOff()` resets it). `content/w2g/room.js` is
+  registered by the service worker (`syncRoomScript()`: `chrome.scripting.registerContentScripts`, persistent) only while w2g.tv access is
+  granted and a tab is chosen, and re-synced on install/startup/permission/settings changes. Markup (from a real room page): the
+  sidebar tabs are `#w2g-sidebar-menu > .w2g-menu-item` x3 (Chat, Playlists, History; only the first two have ids), matched by position
+  so it works in any language, and the active one has `w2g-active`. Do not match "any `.w2g-menu` with three items": the playlist's
+  shuffle options have that shape. The script sends pointer/mouse/click events once, then stops (never fights a manual tab change).
+  Tested only against a mock of that markup; mobile layout (`data-layout`) may order tabs differently and is untested.
 - Menu icons: `scripts/pixel-icons.mjs` (run by `npm run assets`) draws 16x16 pixel-art SVGs into `popup/pixel/` (youtube, w2g,
   share, pause) on the same navy tile as the extension icon; the popup shows them at 32x32. Edit the script, not the SVGs.
 - The popup groups (YouTube, Watch2Gether, Share settings) are collapsible `<details class="group" data-group="...">` with an M3
