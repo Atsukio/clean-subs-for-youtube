@@ -104,16 +104,18 @@ After a code change, reload the extension card and refresh YouTube.
   so it works in any language, and the active one has `w2g-active`. Do not match "any `.w2g-menu` with three items": the playlist's
   shuffle options have that shape. The room resets the sidebar to Chat while it finishes loading (reported on the real page), so the script re-applies the choice on DOM/class changes for 15s (max 8 presses) and stops for good at the first trusted pointerdown on the menu (never fights a manual tab change).
   Tested only against a mock of that markup; mobile layout (`data-layout`) may order tabs differently and is untested.
-- **Don't autoplay when alone** (`w2gNoAutoplayAlone`, default on, counts as a W2G option for access like the others). The
+- **No autoplay when alone** (`w2gNoAutoplayAlone`, default on, counts as a W2G option for access like the others). The
   video and its controls are NOT in the room page: they live in an iframe from `player.w2g.tv` (`#w2g-pane-0 iframe.w2g-npa-frame`),
   a separate site, with the YouTube video nested one level deeper. So there are two scripts, both registered by
   `syncRoomScript()` in the service worker (`SCRIPTS`, each only while its own host is granted): `room.js` reads the "Members
   online" count (`[data-w2g*="onlineUsers"]`, includes you) and `postMessage`s `{ efyW2g: 'alone', alone: n <= 1 }` to the player,
   both when the player asks (`{ efyW2g: 'ask' }`, it may load after the count) and when the count changes; `player.js` (`allFrames`)
   presses W2G's own control `#player_controls [data-w2g*="togglePlay"]` when its icon is `i.icon-pause` (playing; `icon-play` =
-  paused). Origins are checked both ways. It acts only in the first 20s, max 5 presses, and stops at the first trusted
-  pointerdown/keydown in the player frame. Clicks on YouTube's own controls in the nested frame are not seen, so a manual play
-  there within the first 20s could be paused once more. Tested with two local origins standing in for w2g.tv and player.w2g.tv
+  paused). Origins are checked both ways. It POLLS every 500ms (not DOM-change driven: W2G ignores a press while the player
+  is still starting, which changes nothing, so an observer never retried; reported on the real page), with a 1.5s cooldown
+  between presses, for the first 30s of each player load, max 8 presses, and stops at the first trusted pointerdown/keydown
+  in the player frame. It logs what it does to the player frame's console ("[Everything for YouTube] ..."). Clicks on YouTube's own controls in the nested frame are not seen, so a manual play
+  there within the first 30s could be paused once more. Tested with two local origins standing in for w2g.tv and player.w2g.tv
   (headless Edge needs `--disable-site-isolation-trials --disable-features=IsolateOrigins,site-per-process`, otherwise the
   virtual clock does not run in the cross-origin frame); not tested on the real site.
 - Menu icons: `scripts/pixel-icons.mjs` (run by `npm run assets`) draws 16x16 pixel-art SVGs into `popup/pixel/` (youtube, w2g,
@@ -122,6 +124,8 @@ After a code change, reload the extension card and refresh YouTube.
   expandable header; all groups start collapsed, and the open/closed state is remembered in `localStorage` (`efy-open`). A new
   group needs a `data-group` key. The screenshot stub in `scripts/screenshots.mjs` sets which groups are open per scene.
 - Popup grouping: a "YouTube" group (h2) holds a subsection per page (h3: "Subscriptions page", "Video page", "All YouTube pages");
+  the Watch2Gether group has h3 "On YouTube" (the two buttons), "In a room" (room tab, no autoplay, the Grant access row
+  and the access hint), then "API key and rooms" last (the long setup part, shown only while a button is on);
   new on-YouTube features go in a subsection there, and a separate service gets its own group (h2)
   after a divider, like Watch2Gether.
 - Adding a feature: add a default to `EFY.DEFAULTS`, a switch in `popup.html` with

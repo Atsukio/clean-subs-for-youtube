@@ -92,6 +92,7 @@
 
     <details class="group" data-group="w2g">
       <summary><img class="pixel" src="pixel/w2g.svg" alt="" width="32" height="32"><h2 id="h-w2g">Watch2Gether</h2></summary>
+      <h3>On YouTube</h3>
       <label class="item">
         <span class="text">Button on video thumbnails</span>
         <input type="checkbox" role="switch" data-setting="w2gThumbs">
@@ -100,6 +101,7 @@
         <span class="text">Button next to Like and Dislike</span>
         <input type="checkbox" role="switch" data-setting="w2gWatchPage">
       </label>
+      <h3>In a room</h3>
       <div class="field-wrap">
         <label class="field always">
           <select data-value="w2gRoomTab">
@@ -108,19 +110,21 @@
             <option value="playlist">Playlist</option>
             <option value="history">History</option>
           </select>
-          <span class="label">Tab to open in a room</span>
+          <span class="label">Tab to open</span>
         </label>
       </div>
       <label class="item">
-        <span class="text">Don't autoplay when I'm alone in the room<span class="support">Pauses the video on joining if nobody else is online</span></span>
+        <span class="text">No autoplay when I'm alone<span class="support">Pauses the video on joining if nobody else is online</span></span>
         <input type="checkbox" role="switch" data-setting="w2gNoAutoplayAlone">
       </label>
+
       <div class="field-wrap" id="w2g-grant" hidden>
         <p class="support">Chrome has not granted all the w2g.tv access these options need.</p>
         <button id="w2g-grant-button" class="tonal" type="button">Grant access</button>
       </div>
       <p class="support hint" data-hide-when-any="w2gThumbs w2gWatchPage w2gRoomTab w2gNoAutoplayAlone">Turning any of these on asks Chrome for access to w2g.tv.</p>
 
+      <h3 data-show-when-any="w2gThumbs w2gWatchPage" hidden>API key and rooms</h3>
       <div data-show-when-any="w2gThumbs w2gWatchPage" hidden>
         <div class="field-wrap">
           <label class="field" id="apiKey-field">
