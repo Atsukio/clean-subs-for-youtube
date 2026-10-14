@@ -111,7 +111,15 @@
           <span class="label">Tab to open in a room</span>
         </label>
       </div>
-      <p class="support hint" data-hide-when-any="w2gThumbs w2gWatchPage w2gRoomTab">Turning any of these on asks Chrome for access to w2g.tv.</p>
+      <label class="item">
+        <span class="text">Don't autoplay when I'm alone in the room<span class="support">Pauses the video on joining if nobody else is online</span></span>
+        <input type="checkbox" role="switch" data-setting="w2gNoAutoplayAlone">
+      </label>
+      <div class="field-wrap" id="w2g-grant" hidden>
+        <p class="support">Chrome has not granted all the w2g.tv access these options need.</p>
+        <button id="w2g-grant-button" class="tonal" type="button">Grant access</button>
+      </div>
+      <p class="support hint" data-hide-when-any="w2gThumbs w2gWatchPage w2gRoomTab w2gNoAutoplayAlone">Turning any of these on asks Chrome for access to w2g.tv.</p>
 
       <div data-show-when-any="w2gThumbs w2gWatchPage" hidden>
         <div class="field-wrap">

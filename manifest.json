@@ -8,6 +8,7 @@
   "optional_host_permissions": [
     "https://api.w2g.tv/*",
     "https://w2g.tv/*",
+    "https://player.w2g.tv/*",
     "https://www.youtube.com/oembed*"
   ],
   "background": {

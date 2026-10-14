@@ -2,11 +2,12 @@ const $ = (id) => document.getElementById(id);
 
 // Access to Watch2Gether is optional: Chrome only asks for it when the W2G
 // toggle is switched on, and it is handed back when the toggle is switched off.
-const W2G_HOSTS = ['https://api.w2g.tv/*', 'https://w2g.tv/*'];
+const W2G_HOSTS = ['https://api.w2g.tv/*', 'https://w2g.tv/*', 'https://player.w2g.tv/*'];
 // The two W2G buttons each have a switch; access to w2g.tv is asked for when the first goes on and handed back once both are off
 const W2G_SWITCHES = ['w2gThumbs', 'w2gWatchPage'];
-// ...and the default room tab (a dropdown, 'off' = unused) needs the same access
-const W2G_FEATURES = [...W2G_SWITCHES, 'w2gRoomTab'];
+// ...and the room options need the same access: the default tab (a dropdown, 'off' = unused) and "don't autoplay when
+// alone" (on by default, so it only acts once access has been granted; #w2g-grant offers to grant it)
+const W2G_FEATURES = [...W2G_SWITCHES, 'w2gRoomTab', 'w2gNoAutoplayAlone'];
 const w2gOn = (s, key) => (key === 'w2gRoomTab' ? s[key] !== 'off' : !!s[key]);
 
 // Asks for w2g.tv access when a W2G option goes on (call it first in the handler so it counts as a user gesture) and
@@ -59,12 +60,23 @@ function renderSettings(settings) {
   for (const el of document.querySelectorAll('[data-hide-when-any]')) el.hidden = anyOn(el.dataset.hideWhenAny);
   for (const el of document.querySelectorAll('[data-value]')) el.value = settings[el.dataset.value];
   for (const el of document.querySelectorAll('[data-list]')) el.value = (settings[el.dataset.list] || []).join('\n');
+  updateGrant(settings);
 }
+
+// A W2G option is on but Chrome lacks some of the access it needs (the "no autoplay" default before anything was
+// granted, or player.w2g.tv for anyone who granted w2g.tv before that host was added)
+async function updateGrant(settings) {
+  const needed = W2G_FEATURES.some((k) => w2gOn(settings, k));
+  $('w2g-grant').hidden = !needed || await chrome.permissions.contains({ origins: W2G_HOSTS });
+}
+$('w2g-grant-button').addEventListener('click', async () => {
+  if (await chrome.permissions.request({ origins: [...W2G_HOSTS, OEMBED] })) renderSettings(await EFY.loadRaw());
+});
 
 for (const box of document.querySelectorAll('input[data-setting]')) {
   box.addEventListener('change', async () => {
     const key = box.dataset.setting;
-    if (W2G_SWITCHES.includes(key) && !(await syncW2gAccess(key, box.checked))) {
+    if (W2G_FEATURES.includes(key) && !(await syncW2gAccess(key, box.checked))) {
       box.checked = false;
       return say('Chrome did not grant access to w2g.tv, so the button stays off.', 'error');
     }

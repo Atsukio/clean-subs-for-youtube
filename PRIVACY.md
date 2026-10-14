@@ -16,7 +16,7 @@ The optional filters (watched videos, title keywords, channel names, minimum len
 
 ## Watch2Gether feature (off by default)
 
-This feature is off until you turn on one of its two buttons (the thumbnail button or the button next to Like and Dislike) or pick a default room tab. Turning one on makes Chrome ask for access to `w2g.tv`, `api.w2g.tv` and YouTube's `oembed` page; that access is handed back once all of them are off.
+This feature is off until you turn on one of its two buttons (the thumbnail button or the button next to Like and Dislike) or pick a default room tab. "Don't autoplay when I'm alone" is also a Watch2Gether option; it is on by default but does nothing until that access is granted. Turning one on makes Chrome ask for access to `w2g.tv`, `api.w2g.tv`, `player.w2g.tv` and YouTube's `oembed` page; that access is handed back once all of them are off.
 
 When enabled, the extension handles:
 
@@ -25,6 +25,7 @@ When enabled, the extension handles:
 - **The video URL**, sent to YouTube's public `oembed` service only when a title cannot be read from the page.
 - **A request to your room page** at `w2g.tv` when you use "Test connection".
 - **Your room page itself**, when you choose a default room tab: a small script runs on `w2g.tv` room pages and only clicks the Chat, Playlist or History tab. It reads nothing from the room and sends nothing anywhere.
+- **The number of people online in your room**, when "Don't autoplay when I'm alone" is on: a script on the room page reads that number and passes only "alone or not" to Watch2Gether's player frame (`player.w2g.tv`) in the same tab, where another script presses Watch2Gether's own pause button. Nothing leaves your browser.
 
 Watch2Gether's own privacy policy applies to the information you send to it.
 

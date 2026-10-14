@@ -1,5 +1,6 @@
-// Opens the chosen sidebar tab (Chat / Playlist / History) when a Watch2Gether room loads.
-// Registered at runtime by the service worker, only while access to w2g.tv is granted and a tab is chosen.
+// On a Watch2Gether room page: opens the chosen sidebar tab (Chat / Playlist / History), and tells the player frame
+// (content/w2g/player.js) whether anyone else is online, for "don't autoplay when I'm alone".
+// Registered at runtime by the service worker, only while access to w2g.tv is granted and one of those is on.
 (() => {
   'use strict';
 
@@ -25,10 +26,7 @@
     if (e.isTrusted && e.target instanceof Element && e.target.closest('#w2g-sidebar-menu')) userChose = true;
   }, true);
 
-  async function run() {
-    const { w2gRoomTab: which } = await EFY.load();
-    if (!(which in INDEX)) return;
-
+  function runTab(which) {
     const started = Date.now();
     let presses = 0;
     let timer = 0;
@@ -46,5 +44,34 @@
     setTimeout(() => observer.disconnect(), SETTLE_MS);
   }
 
-  run();
+  // "Members online" count in the header; it includes you. The player is an iframe from another site, so it is told by
+  // message, both when it asks (it may load after the count) and whenever the count changes.
+  const PLAYER_ORIGIN = 'https://player.w2g.tv';
+  function onlineCount() {
+    const n = parseInt(document.querySelector('[data-w2g*="onlineUsers"]')?.textContent, 10);
+    return Number.isFinite(n) ? n : null;
+  }
+  function tell(target) {
+    const n = onlineCount();
+    if (n !== null && target) target.postMessage({ efyW2g: 'alone', alone: n <= 1 }, PLAYER_ORIGIN);
+  }
+  function runAlone() {
+    window.addEventListener('message', (e) => {
+      if (e.origin === PLAYER_ORIGIN && e.data?.efyW2g === 'ask') tell(e.source);
+    });
+    let last = null;
+    const observer = new MutationObserver(() => {
+      const n = onlineCount();
+      if (n === last) return;
+      last = n;
+      for (const frame of document.querySelectorAll('iframe.w2g-npa-frame')) tell(frame.contentWindow);
+    });
+    observer.observe(document.documentElement, { childList: true, subtree: true, characterData: true });
+    setTimeout(() => observer.disconnect(), 30000); // the player only acts in its first 20s
+  }
+
+  EFY.load().then((s) => {
+    if (s.w2gRoomTab in INDEX) runTab(s.w2gRoomTab);
+    if (s.w2gNoAutoplayAlone) runAlone();
+  });
 })();

@@ -53,6 +53,7 @@ WATCH2GETHER (off by default)
 • Save several rooms and switch between them from the popup
 • Each of the two buttons has its own switch
 • Pick which tab (Chat, Playlist or History) a Watch2Gether room opens on
+• Joining a room where nobody else is online doesn't start the video by itself (can be switched off)
 • Needs your own Watch2Gether API key and room. Chrome asks for access to w2g.tv only when you turn a button on, and it is handed back when both are off
 
 SETTINGS
@@ -83,12 +84,14 @@ GOOD TO KNOW
 - **storage:** Saves the user's feature toggles and filter lists (chrome.storage.sync) and, for the
   optional Watch2Gether feature, the user's own API key and saved rooms (chrome.storage.local, never
   synced).
-- **scripting:** Registers the small "default room tab" content script on w2g.tv room pages, only while the user has
-  granted w2g.tv access and chosen a tab. It is not declared in the manifest so that no w2g.tv access is required at install.
+- **scripting:** Registers two small content scripts at runtime, only while the user has granted Watch2Gether access and
+  turned on an option that needs them: one on w2g.tv room pages (default room tab; reads the online count) and one in the
+  room's player frame on player.w2g.tv (pauses the video on joining when nobody else is online). It is not declared in the manifest so that no w2g.tv access is required at install.
 - **Host access to www.youtube.com (content scripts):** Needed to tidy and filter the Subscriptions
   page, hide Shorts, and add the Watch2Gether button to video thumbnails and next to Like and Dislike on the video page.
-- **Optional host access to api.w2g.tv and w2g.tv:** Requested only when the user turns on the
-  Watch2Gether feature. Used to add the chosen video to the user's room, to test the connection and, if chosen, to open the room on the Chat, Playlist or History tab.
+- **Optional host access to api.w2g.tv, w2g.tv and player.w2g.tv:** Requested only when the user turns on the
+  Watch2Gether feature. Used to add the chosen video to the user's room, to test the connection, to open the room on the chosen tab and, on player.w2g.tv (the room's player frame), to avoid
+  autoplaying when the user is alone in the room.
 - **Optional host access to www.youtube.com/oembed:** Same optional request. Used only to look up a
   video's title when the page does not provide one.
 - **Remote code:** No. All code is in the package.
