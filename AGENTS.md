@@ -95,7 +95,7 @@ After a code change, reload the extension card and refresh YouTube.
   granted and a tab is chosen, and re-synced on install/startup/permission/settings changes. Markup (from a real room page): the
   sidebar tabs are `#w2g-sidebar-menu > .w2g-menu-item` x3 (Chat, Playlists, History; only the first two have ids), matched by position
   so it works in any language, and the active one has `w2g-active`. Do not match "any `.w2g-menu` with three items": the playlist's
-  shuffle options have that shape. The script sends pointer/mouse/click events once, then stops (never fights a manual tab change).
+  shuffle options have that shape. The room resets the sidebar to Chat while it finishes loading (reported on the real page), so the script re-applies the choice on DOM/class changes for 15s (max 8 presses) and stops for good at the first trusted pointerdown on the menu (never fights a manual tab change).
   Tested only against a mock of that markup; mobile layout (`data-layout`) may order tabs differently and is untested.
 - Menu icons: `scripts/pixel-icons.mjs` (run by `npm run assets`) draws 16x16 pixel-art SVGs into `popup/pixel/` (youtube, w2g,
   share, pause) on the same navy tile as the extension icon; the popup shows them at 32x32. Edit the script, not the SVGs.
