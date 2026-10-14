@@ -67,7 +67,7 @@
       for (const frame of document.querySelectorAll('iframe.w2g-npa-frame')) tell(frame.contentWindow);
     });
     observer.observe(document.documentElement, { childList: true, subtree: true, characterData: true });
-    setTimeout(() => observer.disconnect(), 30000); // the player only acts in its first 20s
+    setTimeout(() => observer.disconnect(), 40000); // the player only acts in its first 30s
   }
 
   EFY.load().then((s) => {

@@ -5,22 +5,27 @@
   'use strict';
 
   const ROOM_ORIGIN = 'https://w2g.tv';
-  const SETTLE_MS = 20000; // only the start of the visit counts as "on joining"
-  const MAX_PRESSES = 5;   // safety stop if something keeps restarting playback
+  const WINDOW_MS = 30000;  // only the start of the visit counts as "on joining" (a reloaded player starts a new window)
+  const POLL_MS = 500;
+  const COOLDOWN_MS = 1500; // give W2G time to act on a press before trying again
+  const MAX_PRESSES = 8;    // safety stop if something keeps restarting playback
+  const log = (...args) => console.info('[Everything for YouTube]', ...args);
 
   // #player_controls > div[togglePlay] > i: .icon-play while paused, .icon-pause while playing
   const toggle = () => document.querySelector('#player_controls [data-w2g*="togglePlay"]');
   const isPlaying = (btn) => !!btn.querySelector('i.icon-pause');
 
-  let enabled = false;
-  let alone = false;
+  let alone = null;
   let userActed = false;
   let presses = 0;
+  let lastPress = 0;
   const started = Date.now();
 
   // Any real input in the player means the user is choosing for themselves (our own clicks are not trusted)
   for (const type of ['pointerdown', 'keydown']) {
-    document.addEventListener(type, (e) => { if (e.isTrusted) userActed = true; }, true);
+    document.addEventListener(type, (e) => {
+      if (e.isTrusted && !userActed) { userActed = true; log('you used the player, so it is left alone from now on'); }
+    }, true);
   }
 
   function press(el) {
@@ -29,28 +34,32 @@
     }
   }
 
-  let timer = 0;
-  const observer = new MutationObserver(() => { clearTimeout(timer); timer = setTimeout(check, 100); });
-
+  // Polled rather than driven by DOM changes: a press W2G ignores while the player is still starting changes nothing,
+  // and the video must still be paused once W2G is ready.
+  let poll = 0;
   function check() {
-    if (userActed || presses >= MAX_PRESSES || Date.now() - started > SETTLE_MS) return observer.disconnect();
-    if (!enabled || !alone) return;
+    if (userActed || presses >= MAX_PRESSES || Date.now() - started > WINDOW_MS) return clearInterval(poll);
+    if (!alone || Date.now() - lastPress < COOLDOWN_MS) return;
     const btn = toggle();
-    if (btn && isPlaying(btn)) { presses++; press(btn); }
+    if (btn && isPlaying(btn)) {
+      presses++;
+      lastPress = Date.now();
+      log(`nobody else is online, pausing (${presses})`);
+      press(btn);
+    }
   }
 
   window.addEventListener('message', (e) => {
     if (e.origin !== ROOM_ORIGIN || e.data?.efyW2g !== 'alone') return;
+    if (alone !== !!e.data.alone) log(e.data.alone ? 'you are alone in the room' : 'someone else is online, autoplay is left alone');
     alone = !!e.data.alone;
     check();
   });
 
   (async () => {
-    enabled = !!(await EFY.load()).w2gNoAutoplayAlone;
-    if (!enabled) return;
-    observer.observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
-    setTimeout(() => observer.disconnect(), SETTLE_MS);
+    if (!(await EFY.load()).w2gNoAutoplayAlone) return;
+    log('watching for autoplay on joining');
+    poll = setInterval(check, POLL_MS);
     window.parent.postMessage({ efyW2g: 'ask' }, ROOM_ORIGIN); // the room page answers with "alone"
-    check();
   })();
 })();
