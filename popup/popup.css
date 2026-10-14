@@ -260,7 +260,7 @@ button.text.danger { color: var(--md-sys-color-error); }
   background-size: 24px;
 }
 .field select:disabled { opacity: .38; cursor: default; }
-.field select option { color: initial; background: initial; }
+.field select option { color: var(--md-sys-color-on-surface); background: var(--md-sys-color-surface-container-high); }
 .detail { margin: 0 8px 8px 16px; }
 .detail .field + .field { margin-top: 12px; }
 .detail .field { margin-top: 12px; }
