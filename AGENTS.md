@@ -202,9 +202,34 @@ change it, regenerate all of `icons/icon{16,48,128}.png` and `store-assets/webst
 ## Conventions
 
 - Match the surrounding style. Keep comments to what is non-obvious.
-- Commits: imperative summary line, short body when useful, end with the Co-Authored-By trailer given
-  by the session. Do not push or archive anything without the owner's explicit say-so.
+- Commits follow [Commit messages](#commit-messages). Do not push or archive anything without the
+  owner's explicit say-so.
 - Git warns "LF will be replaced by CRLF" on Windows. It is harmless; do not "fix" line endings.
+
+## Commit messages
+
+All commits follow [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/):
+
+```text
+<type>(<optional scope>)<optional !>: <imperative summary, lower case, no full stop>
+
+<optional body: what changed and why, wrapped at 72 columns>
+
+<optional footers: BREAKING CHANGE: ..., Co-Authored-By: ...>
+```
+
+- **Types:** `feat` (user-visible feature), `fix` (bug fix), `docs`, `refactor`, `test`, `ci`, `build`, `chore`,
+  `perf`, `style`, `revert`.
+- **Scope** is optional: `subs`, `cleanup`, `w2g`, `popup`, `background`, `settings`, `theme`, `store`, `icon`.
+  For example, `fix(w2g): keep the button on thumbnails after navigation`.
+- **Breaking changes:** put `!` after the type/scope and add a `BREAKING CHANGE:` footer that explains how to
+  migrate (for example, settings that are reset or a permission that is newly required).
+- **Versioning:** the commits since the last release decide the next version in `manifest.json` and
+  `package.json`. Any breaking change means a major bump, otherwise any `feat` means minor, otherwise any `fix`
+  means patch. `docs`, `ci`, `chore` and similar commits on their own don't need a release. A release commit is
+  `chore(release): X.Y.Z`.
+- Commits made by an AI agent end with its `Co-Authored-By` trailer given by the session as the last footer.
+- Commits before 2026-10-14 predate this rule. Don't rewrite history to fix them.
 
 ## Environment gotchas (Windows)
 
