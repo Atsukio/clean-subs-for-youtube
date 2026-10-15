@@ -282,10 +282,11 @@ All commits follow [Conventional Commits 1.0.0](https://www.conventionalcommits.
 
 ## Status and ideas not yet done
 
-- **Web Store:** 1.2.0 (the merged "Everything for YouTube") has been uploaded by the owner. 1.2.1 (two independent W2G
-  switches, permission-removal fix) is packaged and awaiting upload. The store rejects a package whose version is not
+- **Web Store:** 1.2.0 (the merged "Everything for YouTube") has been uploaded by the owner. 1.3.0 (room tab, no autoplay when
+  alone, error toast, popup subsections, new `scripting` permission and `player.w2g.tv` optional host) is packaged and awaiting
+  upload; whether 1.2.1 was uploaded is unknown. The store rejects a package whose version is not
   higher than the last upload, so **the next change that ships must bump the version** in `manifest.json` and
-  `package.json` first (1.2.2 or higher once 1.2.1 is uploaded), then `npm run package`.
+  `package.json` first (1.3.1 or higher once 1.3.0 is uploaded), then `npm run package`.
 
 - Not tested end to end in Chrome by the assistant: load unpacked and check each toggle, the
   permission prompt, the W button on the video page, and the toolbar icon sizes. The filter logic was

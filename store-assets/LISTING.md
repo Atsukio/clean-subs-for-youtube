@@ -6,7 +6,7 @@ Values to enter in the Chrome Web Store developer dashboard. Keep in sync with `
 ## Package
 
 - Upload: `dist/everything-for-youtube-<version>.zip` (`npm run package`)
-- Version: must be higher than the published one (1.2.0 is the last one uploaded; earlier 1.0.0 and 1.1.0; 1.2.1 is ready to upload)
+- Version: must be higher than the published one (1.3.0 is packaged and ready to upload; earlier uploads 1.0.0, 1.1.0, 1.2.0 and possibly 1.2.1)
 
 ## Store listing
 
@@ -48,13 +48,14 @@ VIDEO PAGE
 ALL YOUTUBE PAGES
 • Hide Shorts everywhere: Home, search, related videos and the sidebar (off by default)
 
-WATCH2GETHER (off by default)
+WATCH2GETHER (optional)
 • Hover a video thumbnail and click the W button, or use the W2G button next to Like and Dislike on a video page, to add that video to your Watch2Gether room's playlist
 • Save several rooms and switch between them from the popup
 • Each of the two buttons has its own switch
 • Pick which tab (Chat, Playlist or History) a Watch2Gether room opens on
-• Joining a room where nobody else is online doesn't start the video by itself (can be switched off)
-• Needs your own Watch2Gether API key and room. Chrome asks for access to w2g.tv only when you turn a button on, and it is handed back when both are off
+• Joining a room where nobody else is online doesn't start the video by itself (on by default, can be switched off)
+• If adding a video fails, a notification on the page says why
+• The buttons need your own Watch2Gether API key and room. Chrome asks for access to w2g.tv only when you turn a Watch2Gether option on, and it is handed back when they are all off
 
 SETTINGS
 • Pause all features with one switch
