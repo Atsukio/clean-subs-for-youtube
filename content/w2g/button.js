@@ -58,6 +58,57 @@
   }
   const applyTheme = (host) => { host.dataset.theme = pageIsDark() ? 'dark' : 'light'; };
 
+  // Asks the service worker to add the video. Never throws: a failure to reach the extension becomes an error result
+  // that says what Chrome reported, so it can be told apart from W2G's own errors.
+  async function requestAdd(video) {
+    try {
+      const res = await chrome.runtime.sendMessage({ type: 'add', ...video });
+      if (!res) return { status: 'error', message: 'The extension did not answer. Reload the page and try again.' };
+      if (res.status === 'error') console.warn('[Everything for YouTube]', res.message);
+      return res;
+    } catch (err) {
+      const why = err?.message || String(err);
+      console.warn('[Everything for YouTube] could not reach the extension:', why);
+      return /context invalidated/i.test(why)
+        ? { status: 'error', message: 'The extension was updated or reloaded. Refresh this page.' }
+        : { status: 'error', message: `Could not reach the extension (${why}). Refresh this page.` };
+    }
+  }
+
+  // Failed adds also show a toast in the corner, styled like YouTube's own, so the reason is readable without hovering.
+  // One at a time: a newer error replaces the older one.
+  const TOAST_CSS = `
+    :host { all: initial; position: fixed; left: 24px; bottom: 24px; z-index: 2300; }
+    .toast { display: flex; align-items: flex-start; gap: 12px; box-sizing: border-box; max-width: min(480px, calc(100vw - 48px));
+      padding: 12px 8px 12px 16px; border-radius: 8px; font: 400 14px/20px Roboto, Arial, sans-serif;
+      box-shadow: 0 4px 12px rgba(0,0,0,.3); animation: in .2s ease-out; }
+    :host([data-theme="light"]) .toast { background: #0f0f0f; color: #f1f1f1; }
+    :host([data-theme="dark"]) .toast { background: #f1f1f1; color: #0f0f0f; }
+    .text { flex: 1; min-width: 0; overflow-wrap: anywhere; padding-top: 6px; }
+    strong { display: block; font-weight: 500; }
+    button { flex: none; width: 32px; height: 32px; border: 0; border-radius: 50%; background: transparent; color: inherit;
+      font: 400 20px/32px Roboto, Arial, sans-serif; cursor: pointer; }
+    button:hover { background: rgba(128,128,128,.2); }
+    @keyframes in { from { opacity: 0; transform: translateY(8px); } }
+  `;
+  const TOAST_MS = 10000;
+  let toast = null;
+  function showError(message) {
+    toast?.remove();
+    const host = document.createElement('div');
+    host.className = 'efy-w2g-toast';
+    applyTheme(host);
+    const root = host.attachShadow({ mode: 'open' });
+    root.innerHTML = `<style>${TOAST_CSS}</style><div class="toast" role="alert"><div class="text"><strong>Couldn't add to Watch2Gether</strong><span></span></div><button type="button" aria-label="Dismiss">×</button></div>`;
+    root.querySelector('span').textContent = message || 'Unknown error.';
+    let timer = setTimeout(() => host.remove(), TOAST_MS);
+    root.querySelector('button').addEventListener('click', () => host.remove());
+    host.addEventListener('mouseenter', () => clearTimeout(timer)); // stays while being read
+    host.addEventListener('mouseleave', () => { timer = setTimeout(() => host.remove(), TOAST_MS / 2); });
+    document.body.append(host);
+    toast = host;
+  }
+
   // The pill that matches YouTube's own buttons: a plain <button> that reuses the class names of a real
   // sibling (Share, Download...) read at runtime, so size, font, shape, colours, hover and light/dark mode all
   // come from YouTube's CSS and survive it renaming things. Returns null when there is no sibling to copy yet.
@@ -166,6 +217,7 @@
       if (btn.dataset.busy) return;
       const video = readVideo();
       const done = (state, title) => {
+        if (state === 'error') showError(title);
         delete btn.dataset.busy;
         setState(state, title);
         clearTimeout(timer);
@@ -174,13 +226,8 @@
       if (!video) return done('error', 'Could not find the video link.');
       btn.dataset.busy = '1';
       setState('loading');
-      try {
-        const res = await chrome.runtime.sendMessage({ type: 'add', ...video });
-        if (res.status === 'error') console.warn('[Clean Subs]', res.message);
-        done(res.status, res.message || '');
-      } catch {
-        done('error', 'Extension was reloaded. Refresh the page.');
-      }
+      const res = await requestAdd(video);
+      done(res.status, res.message || '');
     });
 
     const reset = () => { clearTimeout(timer); delete btn.dataset.busy; setState('idle'); };
@@ -235,17 +282,13 @@
       if (!video) return flash('error', 'Could not find the video link.');
       setState('loading');
       host.keepVisible = true;
-      try {
-        const res = await chrome.runtime.sendMessage({ type: 'add', ...video });
-        if (res.status === 'error') console.warn('[Clean Subs]', res.message);
-        flash(res.status, res.message || '');
-      } catch {
-        flash('error', 'Extension was reloaded. Refresh the page.');
-      }
+      const res = await requestAdd(video);
+      flash(res.status, res.message || '');
     });
 
     // Keep the button on screen while the result shows, even if the mouse leaves.
     function flash(state, title) {
+      if (state === 'error') showError(title);
       setState(state, title);
       host.keepVisible = true;
       if (!pill) host.style.display = 'block';

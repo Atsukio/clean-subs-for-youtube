@@ -202,7 +202,11 @@ with **Roboto**.
 - If no sibling button exists yet, a shadow-DOM fallback pill (40px, `--yt-sys-color-baseline--*` colours, `data-theme`
   detection) is used and swapped for the native one on a later scan. `--yt-spec-*` variables do not exist on the real page.
   `scan()` re-places the pill if YouTube re-renders the row, and `yt-navigate-finish` resets it to idle so "Added" does not
-  carry over. Thumbnails keep the hover-overlay variant. To test without YouTube, serve a mock row with this structure from a
+  carry over. Thumbnails keep the hover-overlay variant.
+- A failed add also shows an on-page toast (`showError()` in `button.js`, shadow DOM, bottom-left, YouTube-style: light toast on dark
+  YouTube and vice versa, 10s, stays while hovered). Not `chrome.notifications`: that is an install-time permission (would
+  disable existing installs) and could not report the case where the page cannot reach the extension. `requestAdd()` never
+  throws: it turns "Extension context invalidated", no answer, or any other messaging error into a readable error result. To test without YouTube, serve a mock row with this structure from a
   throwaway local server and serve the adapter with `matches` forced true (Edge forces HTTPS for youtube.com hosts).
 - The mutation observers are debounced and idle off the relevant pages. Keep it that way: YouTube
   mutates the DOM constantly.
