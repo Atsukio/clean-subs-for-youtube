@@ -4,6 +4,10 @@ Guidance for AI agents (and humans) working in this repo. **Keep this file up to
 whenever a change alters structure, conventions, permissions, tooling, release steps or
 a decision recorded here, update the relevant section in the same commit.**
 
+**Shared rules first:** this file covers only what is specific to this extension. The rules common to all
+of the owner's extensions (design, permissions, privacy, releases, commit messages, Windows gotchas) are in
+`../extension-kit/CONVENTIONS.md` (imported by `CLAUDE.md`). Where the two differ, this file wins.
+
 ## What this is
 
 **Everything for YouTube**: a Manifest V3 Chrome extension, built mainly for personal and
@@ -25,7 +29,11 @@ folder on the owner's machine is still called `clean-subs-for-youtube`; that doe
 
 ## Layout
 
+Follows the kit's standard layout (moved to it on 2026-10-17: `popup/` became `ui/`, `popup/fonts/` became `fonts/`,
+`scripts/` became `tools/`, `store-assets/` became `store/`, icons were renamed to `icon-<size>.png`).
+
 ```text
+CLAUDE.md                imports ../extension-kit/CONVENTIONS.md and this file (not shipped)
 manifest.json            MV3 manifest (version, permissions, content scripts)
 background/              service-worker.js (module): W2G requests, permission -> toggle sync
 content/
@@ -36,15 +44,16 @@ content/
   w2g/room.js            w2g.tv room page: default sidebar tab, tells the player who is online (registered at runtime)
   w2g/player.js          player.w2g.tv frame: pauses on joining when alone (registered at runtime)
   w2g/adapters/youtube.js   site adapter (selectors + getVideo)
-popup/                   settings popup (popup.html/css/js)
+ui/                      settings popup (popup.html/css/js)
   changelog.js           user-facing notes per release, shown once after an update ("What's new")
   theme.css              GENERATED M3 tokens for the popup
-  fonts/                 GENERATED copy of Roboto 400/500 woff2 + licence
+  pixel/                 GENERATED pixel-art menu icons
+fonts/                   GENERATED copy of Roboto 400/500 woff2 + licence (used by ui/theme.css)
 lib/settings.js          feature toggles shared by content scripts and popup (globalThis.EFY)
 lib/ids.js               YouTube URL -> canonical id (service worker only)
-icons/                   16/48/128 extension icons (generated, see Icon)
-store-assets/            Web Store icon, screenshots, promo tiles (+ their HTML sources), LISTING.md (dashboard values)
-scripts/                 package.js (zip), build-assets.mjs (theme + fonts)
+icons/                   icon-16/48/128.png extension icons (generated, see Icon)
+store/                   Web Store icon, screenshots, promo tiles (+ their HTML sources), LISTING.md (dashboard values)
+tools/                   package.js (zip), build-assets.mjs (theme + fonts), pixel-icons.mjs, screenshots.mjs
 PRIVACY.md               privacy policy; its GitHub URL is entered in the Web Store listing
 dist/                    build output, git-ignored
 ```
@@ -54,8 +63,8 @@ dist/                    build output, git-ignored
 ```sh
 npm install
 npm run lint       # ESLint over everything
-npm run assets     # regenerate popup/theme.css, content/theme.css, popup/fonts/
-npm run screenshots  # re-render store-assets/screenshots/*.png and promo/*.png (needs Edge or Chrome)
+npm run assets     # regenerate ui/theme.css, content/theme.css, fonts/, ui/pixel/
+npm run screenshots  # re-render store/screenshots/*.png and promo/*.png (needs Edge or Chrome)
 npm run package    # dist/everything-for-youtube-<version>.zip (what gets uploaded)
 ```
 
@@ -125,11 +134,11 @@ After a code change, reload the extension card and refresh YouTube.
   newer than `whatsNewFrom` and not newer than the running version; "Got it" clears the key and the badge. No permission needed,
   no tab is opened, nothing on fresh install. Reloading an unpacked copy reports `update` with the same version, so to see the
   card while developing, set `whatsNewFrom` to an older version from the service worker console.
-- Menu icons: `scripts/pixel-icons.mjs` (run by `npm run assets`) draws 16x16 pixel-art SVGs into `popup/pixel/` (youtube, w2g,
+- Menu icons: `tools/pixel-icons.mjs` (run by `npm run assets`) draws 16x16 pixel-art SVGs into `ui/pixel/` (youtube, w2g,
   share, pause) on the same navy tile as the extension icon; the popup shows them at 32x32. Edit the script, not the SVGs.
 - The popup groups (YouTube, Watch2Gether, Share settings) are collapsible `<details class="group" data-group="...">` with an M3
   expandable header; all groups start collapsed, and the open/closed state is remembered in `localStorage` (`efy-open`). A new
-  group needs a `data-group` key. The screenshot stub in `scripts/screenshots.mjs` sets which groups are open per scene.
+  group needs a `data-group` key. The screenshot stub in `tools/screenshots.mjs` sets which groups are open per scene.
 - Popup grouping: a "YouTube" group (h2) holds a subsection per page (h3: "Subscriptions page", "Video page", "All YouTube pages");
   the Watch2Gether group has h3 "On YouTube" (the two buttons), "In a room" (room tab, no autoplay, the Grant access row
   and the access hint), then "API key and rooms" last (the long setup part, shown only while a button is on);
@@ -144,22 +153,17 @@ After a code change, reload the extension card and refresh YouTube.
 
 ## Design: Material Design 3
 
-Our own UI follows Material Design 3 (colour roles, type scale, shape, state layers, 48dp targets)
-with **Roboto**.
+The shared M3 rules are in `CONVENTIONS.md`. Here:
 
-- Colours are real M3 roles generated from seed `#3d6fd8` (the icon's blue) by
-  `scripts/build-assets.mjs` using `@material/material-color-utilities` **0.3.0** (0.4.0 ships
-  broken ESM imports under Node 24; do not upgrade without checking). Change the seed or tokens in the
-  script, run `npm run assets`, and commit the generated files. Never hand-edit `theme.css`.
-- Use tokens (`var(--md-sys-color-*)`, `--md-sys-shape-*`, `--md-sys-typescale-*`,
-  `--md-sys-state-*`), not raw values. Components in use: switch, outlined text field with floating
+- Seed `#3d6fd8` (the icon's blue), generated by `tools/build-assets.mjs`: change the seed or tokens in the
+  script, run `npm run assets`, and commit the generated files (`theme.css`).
+- Tokens: `var(--md-sys-color-*)`, `--md-sys-shape-*`, `--md-sys-typescale-*`, `--md-sys-state-*`. Components in use: switch, outlined text field with floating
   label, filled / tonal / text buttons, divider between setting groups, segmented button (the Videos|Shorts tabs).
 - Popup type sizes are deliberately one step down the M3 scale for a compact popup: title-medium (16px)
   heading, body-medium (14px) for list items and fields, body-small (12px) for supporting text.
   Do not go back to body-large/title-large without a reason. Switches are also compact (40x24, list rows
   48px, buttons 32px high) instead of the M3 default 52x32/56px/40px.
-- Fonts are bundled locally (`popup/fonts`, Roboto, OFL licence included): the popup must not make
-  network requests. The injected tab bar relies on YouTube's own already-loaded Roboto.
+- Fonts: `fonts/` (Roboto 400/500, OFL licence included). The injected tab bar relies on YouTube's own already-loaded Roboto.
 - Popup colour roles: group titles (h2) use `primary` (blue), subsection labels (h3: "Subscriptions page", "Video page", ...) use
   `tertiary` (orchid) so the two levels read differently.
 - Popup follows `prefers-color-scheme`; the tab bar follows YouTube's `html[dark]`. The bar's
@@ -229,67 +233,38 @@ with **Roboto**.
   are justified as one purpose, so keep the description consistent).
 - Privacy policy URL: `https://github.com/Atsukio/everything-for-youtube/blob/main/PRIVACY.md`.
   Update `PRIVACY.md` (and its effective date) whenever data handling changes.
-- Screenshots are 1280x800 24-bit PNGs in `store-assets/screenshots/` (subscriptions, watch2gether thumbnails,
-  watch2gether video page, settings, settings-watch2gether). `npm run screenshots` renders them from `store-assets/screenshot.html` (scenes by URL hash) using
-  the real CSS and a popup preview generated from `popup/popup.html` (git-ignored). Re-run it after any UI
+- Screenshots are 1280x800 24-bit PNGs in `store/screenshots/` (subscriptions, watch2gether thumbnails,
+  watch2gether video page, settings, settings-watch2gether). `npm run screenshots` renders them from `store/screenshot.html` (scenes by URL hash) using
+  the real CSS and a popup preview generated from `ui/popup.html` (git-ignored). Re-run it after any UI
   change. They are clearly labelled illustrations with placeholder content; prefer real captures if they can be
   taken without personal data.
 - Release: bump `version` in `manifest.json` and `package.json`, add a plain-language entry for that version at the top of
-  `popup/changelog.js` (what users will notice, not internals), `npm run lint`, `npm run package`, upload the zip from `dist/`.
+  `ui/changelog.js` (what users will notice, not internals), `npm run lint`, `npm run package`, upload the zip from `dist/`.
 
 ## Icon
 
 Pixel art, drawn on a 32x32 grid and scaled 4x with nearest-neighbour for 128px (so it stays crisp);
 16 and 48 are downscaled from 128. Transparent rounded corners. The tile runs edge to edge. There
 is no script for it yet: it was generated with a one-off PowerShell/System.Drawing script. If you
-change it, regenerate all of `icons/icon{16,48,128}.png` and `store-assets/webstore-icon.png`.
-
-## Conventions
-
-- Match the surrounding style. Keep comments to what is non-obvious.
-- Commits follow [Commit messages](#commit-messages). Do not push or archive anything without the
-  owner's explicit say-so.
-- Git warns "LF will be replaced by CRLF" on Windows. It is harmless; do not "fix" line endings.
+change it, regenerate all of `icons/icon-{16,48,128}.png` and `store/webstore-icon.png`.
 
 ## Commit messages
 
-All commits follow [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/):
+Conventional Commits as in `CONVENTIONS.md`, plus:
 
-```text
-<type>(<optional scope>)<optional !>: <imperative summary, lower case, no full stop>
-
-<optional body: what changed and why, wrapped at 72 columns>
-
-<optional footers: BREAKING CHANGE: ..., Co-Authored-By: ...>
-```
-
-- **Types:** `feat` (user-visible feature), `fix` (bug fix), `docs`, `refactor`, `test`, `ci`, `build`, `chore`,
-  `perf`, `style`, `revert`.
 - **Scope** is optional: `subs`, `cleanup`, `w2g`, `popup`, `background`, `settings`, `theme`, `store`, `icon`.
   For example, `fix(w2g): keep the button on thumbnails after navigation`.
-- **Breaking changes:** put `!` after the type/scope and add a `BREAKING CHANGE:` footer that explains how to
-  migrate (for example, settings that are reset or a permission that is newly required).
-- **Versioning:** the commits since the last release decide the next version in `manifest.json` and
-  `package.json`. Any breaking change means a major bump, otherwise any `feat` means minor, otherwise any `fix`
-  means patch. `docs`, `ci`, `chore` and similar commits on their own don't need a release. A release commit is
-  `chore(release): X.Y.Z`.
-- Commits made by an AI agent end with its `Co-Authored-By` trailer given by the session as the last footer.
-- Commits before 2026-10-14 predate this rule. Don't rewrite history to fix them.
+- The version lives in both `manifest.json` and `package.json`. A release commit is `chore(release): X.Y.Z`
+  (no `v`).
 
 ## Environment gotchas (Windows)
 
-- Node must be on PATH. If a terminal started before install can't find `node`, add
-  `C:\Program Files\nodejs` to PATH for that session or restart VS Code fully.
-- In Git Bash, `tar` resolves to GNU tar. `scripts/package.js` calls Windows' own
-  `System32\tar.exe` (bsdtar) explicitly so the zip has forward-slash paths; PowerShell 5.1
-  `Compress-Archive` writes backslashes and should not be used.
-- Windows PowerShell 5.1 `Get-Content`/`Set-Content` re-encode UTF-8 (it mangled the (c) sign in
-  the README once). Edit text files with the editor tools or `sed`, not PowerShell read/write.
-- In `sed`, do not use `#` as the delimiter when the replacement contains `#` (Markdown headings).
+The shared ones are in `CONVENTIONS.md`. Here: `tools/package.js` calls Windows' own `System32\tar.exe`
+(bsdtar) explicitly so the zip has forward-slash paths, because in Git Bash `tar` resolves to GNU tar.
 
 ## Status and ideas not yet done
 
-- **Web Store:** 1.2.0 (the merged "Everything for YouTube") has been uploaded by the owner. 1.4.0 ("What's new" card) is packaged and
+- **Web Store:** 1.2.0 (the merged "Everything for YouTube") has been uploaded by the owner. 1.4.0 ("What's new" card) is packaged (the zip was rebuilt after the layout move: same code, new paths) and
   awaiting upload; it also carries everything from 1.3.0 (room tab, no autoplay when alone, error toast, popup subsections, new
   `scripting` permission and `player.w2g.tv` optional host). Whether 1.2.1 / 1.3.0 were uploaded is unknown. The store rejects a package whose version is not
   higher than the last upload, so **the next change that ships must bump the version** in `manifest.json` and

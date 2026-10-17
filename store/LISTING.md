@@ -15,18 +15,18 @@ Values to enter in the Chrome Web Store developer dashboard. Keep in sync with `
   YouTube tweaks for personal and friends' use: Subscriptions tabs and filters, hide Shorts, one-click add to Watch2Gether.
 - **Category:** Productivity
 - **Language:** English
-- **Icon (128x128):** `store-assets/webstore-icon.png`
+- **Icon (128x128):** `store/webstore-icon.png`
 - **Screenshots (1280x800, upload in this order; the store allows up to 5):**
-  1. `store-assets/screenshots/01-subscriptions.png`: Videos | Shorts tabs on the Subscriptions page
-  2. `store-assets/screenshots/02-watch2gether-thumbnails.png`: the W button on thumbnails (idle and added)
-  3. `store-assets/screenshots/03-watch2gether-video-page.png`: the W2G button next to Like and Dislike
-  4. `store-assets/screenshots/04-settings.png`: the settings popup (YouTube options)
-  5. `store-assets/screenshots/05-settings-watch2gether.png`: the Watch2Gether settings
+  1. `store/screenshots/01-subscriptions.png`: Videos | Shorts tabs on the Subscriptions page
+  2. `store/screenshots/02-watch2gether-thumbnails.png`: the W button on thumbnails (idle and added)
+  3. `store/screenshots/03-watch2gether-video-page.png`: the W2G button next to Like and Dislike
+  4. `store/screenshots/04-settings.png`: the settings popup (YouTube options)
+  5. `store/screenshots/05-settings-watch2gether.png`: the Watch2Gether settings
 
   They are illustrations with placeholder content (regenerate with `npm run screenshots`); replace with
   real captures if they can be taken without personal data.
-- **Small promo tile (440x280, required):** `store-assets/promo/small-promo-440x280.png`
-- **Marquee promo tile (1400x560, optional):** `store-assets/promo/marquee-1400x560.png` (only used if the store features the
+- **Small promo tile (440x280, required):** `store/promo/small-promo-440x280.png`
+- **Marquee promo tile (1400x560, optional):** `store/promo/marquee-1400x560.png` (only used if the store features the
   extension; safe to skip)
 - **Homepage / support URL:** https://github.com/Atsukio/everything-for-youtube
   (issues: https://github.com/Atsukio/everything-for-youtube/issues)

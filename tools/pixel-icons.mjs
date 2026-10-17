@@ -1,13 +1,13 @@
 // Draws the small pixel-art icons used by the popup's menu items.
 //   npm run assets
 // Each icon is a 16x16 grid on the same navy rounded tile as the extension icon (so it reads on light and dark
-// popups), written as a crisp SVG to popup/pixel/. The popup shows them at 32x32 (an exact 2x).
+// popups), written as a crisp SVG to ui/pixel/. The popup shows them at 32x32 (an exact 2x).
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
-const outDir = path.join(root, "popup", "pixel");
+const outDir = path.join(root, "ui", "pixel");
 const N = 16;
 
 const C = {
@@ -103,4 +103,4 @@ function toSvg(g) {
 
 fs.mkdirSync(outDir, { recursive: true });
 for (const [name, draw] of Object.entries(icons)) fs.writeFileSync(path.join(outDir, `${name}.svg`), toSvg(draw()));
-console.log("Wrote popup/pixel/" + Object.keys(icons).map((n) => n + ".svg").join(", "));
+console.log("Wrote ui/pixel/" + Object.keys(icons).map((n) => n + ".svg").join(", "));

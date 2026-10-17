@@ -6,4 +6,4 @@ desktop.ini
 *.pem
 node_modules/
 dist/
-store-assets/popup-preview.html
+store/popup-preview.html

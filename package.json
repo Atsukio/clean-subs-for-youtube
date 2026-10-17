@@ -5,9 +5,9 @@
   "description": "Dev tooling for the Everything for YouTube Chrome extension",
   "scripts": {
     "lint": "eslint .",
-    "assets": "node scripts/build-assets.mjs && node scripts/pixel-icons.mjs",
-    "screenshots": "node scripts/screenshots.mjs",
-    "package": "node scripts/package.js"
+    "assets": "node tools/build-assets.mjs && node tools/pixel-icons.mjs",
+    "screenshots": "node tools/screenshots.mjs",
+    "package": "node tools/package.js"
   },
   "devDependencies": {
     "@eslint/js": "^9.0.0",

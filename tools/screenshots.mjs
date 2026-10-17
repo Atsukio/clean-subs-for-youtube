@@ -1,14 +1,14 @@
-// Renders the Web Store screenshots (1280x800) from store-assets/screenshot.html.
+// Renders the Web Store screenshots (1280x800) from store/screenshot.html.
 //   npm run screenshots
 // Needs Microsoft Edge or Google Chrome installed. The popup scene embeds the real popup,
-// generated here from popup/popup.html with a stubbed chrome.* API and fake example data.
+// generated here from ui/popup.html with a stubbed chrome.* API and fake example data.
 import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
-const assets = path.join(root, "store-assets");
+const assets = path.join(root, "store");
 const outDir = path.join(assets, "screenshots");
 
 const browser = [
@@ -22,7 +22,7 @@ const browser = [
 ].find((p) => fs.existsSync(p));
 if (!browser) throw new Error("Install Chrome or Edge to render the screenshots.");
 
-// Popup preview: popup.html lives one folder below the repo root, like store-assets/, so
+// Popup preview: popup.html lives one folder below the repo root, like store/, so
 // only the files next to it need re-pointing.
 const stub = `<script>
   // Which group is open: #h-w2g (the Watch2Gether scene) shows that one, anything else shows YouTube.
@@ -52,8 +52,8 @@ const stub = `<script>
 </script>
 `;
 const popup = fs
-  .readFileSync(path.join(root, "popup", "popup.html"), "utf8")
-  .replace(/(href|src)="(?!\.\.\/|https?:)([^"]+)"/g, '$1="../popup/$2"')
+  .readFileSync(path.join(root, "ui", "popup.html"), "utf8")
+  .replace(/(href|src)="(?!\.\.\/|https?:)([^"]+)"/g, '$1="../ui/$2"')
   .replace("<link", stub + "<link");
 fs.writeFileSync(path.join(assets, "popup-preview.html"), popup);
 
@@ -82,7 +82,7 @@ for (const [scene, file] of scenes) {
     ],
     { stdio: "ignore" },
   );
-  console.log("Wrote store-assets/screenshots/" + file);
+  console.log("Wrote store/screenshots/" + file);
 }
 
 // Promo images: the small promo tile (required by the store) and the marquee (optional)
@@ -108,5 +108,5 @@ for (const [scene, width, height, file] of [
     ],
     { stdio: "ignore" },
   );
-  console.log("Wrote store-assets/promo/" + file);
+  console.log("Wrote store/promo/" + file);
 }

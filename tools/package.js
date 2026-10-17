@@ -9,7 +9,7 @@ const root = path.join(__dirname, "..");
 const manifest = JSON.parse(fs.readFileSync(path.join(root, "manifest.json"), "utf8"));
 const dist = path.join(root, "dist");
 const out = path.join(dist, `everything-for-youtube-${manifest.version}.zip`);
-const files = ["manifest.json", "background", "content", "lib", "popup", "icons"];
+const files = ["manifest.json", "background", "content", "lib", "ui", "fonts", "icons"];
 
 for (const f of files) {
   if (!fs.existsSync(path.join(root, f))) throw new Error(`Missing ${f}`);

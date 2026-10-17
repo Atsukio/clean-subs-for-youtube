@@ -37,7 +37,7 @@ no promise that every request will be added.
 - **Pause all features** turns everything off at once without losing your settings
 - **Share settings** exports your toggles and filters as a short code and imports one from a friend. The W2G key, rooms and the two W2G switches are never included
 
-![Illustration of the Videos and Shorts tabs on the Subscriptions page](store-assets/screenshots/01-subscriptions.png)
+![Illustration of the Videos and Shorts tabs on the Subscriptions page](store/screenshots/01-subscriptions.png)
 
 *Illustration with placeholder content, not a capture of a real account.*
 
@@ -83,9 +83,12 @@ manifest.json
 background/   service worker (Watch2Gether requests, permission sync)
 content/      subs-cleaner.*  Subscriptions page features
               w2g/            thumbnail button, site adapter, room page and player scripts
-popup/        settings popup
+ui/           settings popup
 lib/          settings.js (feature toggles), ids.js
-store-assets/ Web Store icon and screenshot source
+fonts/        bundled Roboto
+icons/        extension icons
+tools/        packaging, theme, icon and screenshot scripts (dev only)
+store/        Web Store listing, icon, screenshots and their source
 ```
 
 ## Known limitations

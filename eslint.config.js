@@ -7,7 +7,7 @@ const extensionGlobals = { ...globals.browser, ...globals.webextensions, EFY: "r
 module.exports = [
   js.configs.recommended,
   {
-    files: ["content/**/*.js", "popup/*.js", "lib/settings.js"],
+    files: ["content/**/*.js", "ui/*.js", "lib/settings.js"],
     languageOptions: { sourceType: "script", globals: extensionGlobals },
   },
   {
@@ -19,11 +19,11 @@ module.exports = [
     languageOptions: { sourceType: "module", globals: { ...globals.browser, ...globals.serviceworker, ...globals.webextensions } },
   },
   {
-    files: ["scripts/**/*.js", "eslint.config.js"],
+    files: ["tools/**/*.js", "eslint.config.js"],
     languageOptions: { sourceType: "commonjs", globals: globals.node },
   },
   {
-    files: ["scripts/**/*.mjs"],
+    files: ["tools/**/*.mjs"],
     languageOptions: { sourceType: "module", globals: globals.node },
   },
 ];
