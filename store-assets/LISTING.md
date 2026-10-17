@@ -6,7 +6,7 @@ Values to enter in the Chrome Web Store developer dashboard. Keep in sync with `
 ## Package
 
 - Upload: `dist/everything-for-youtube-<version>.zip` (`npm run package`)
-- Version: must be higher than the published one (1.3.0 is packaged and ready to upload; earlier uploads 1.0.0, 1.1.0, 1.2.0 and possibly 1.2.1)
+- Version: must be higher than the published one (1.4.0 is packaged and ready to upload; earlier uploads 1.0.0, 1.1.0, 1.2.0 and possibly 1.2.1 / 1.3.0)
 
 ## Store listing
 
@@ -60,6 +60,7 @@ WATCH2GETHER (optional)
 SETTINGS
 • Pause all features with one switch
 • Export your settings as a short code and import a friend's
+• After an update, the popup shows what's new
 
 PRIVACY
 • Nothing is sent to the developer, and there is no analytics

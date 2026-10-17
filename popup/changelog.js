@@ -2,6 +2,12 @@
 // Add an entry in the release commit for every version users should hear about; plain sentences, no internals.
 globalThis.EFY_CHANGELOG = [
   {
+    version: '1.4.0',
+    items: [
+      'After an update, this popup now shows what changed (like this note) and the toolbar icon is marked NEW until you click "Got it".',
+    ],
+  },
+  {
     version: '1.3.0',
     items: [
       'Watch2Gether: choose which tab (Chat, Playlist or History) a room opens on.',

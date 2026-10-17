@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Everything for YouTube",
   "short_name": "Everything for YT",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "YouTube tweaks for personal and friends' use: Subscriptions tabs and filters, hide Shorts, one-click add to Watch2Gether.",
   "permissions": ["storage", "scripting"],
   "optional_host_permissions": [
