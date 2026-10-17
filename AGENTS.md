@@ -267,10 +267,10 @@ The shared ones are in `CONVENTIONS.md`. Here: `tools/package.js` calls Windows'
 - **Web Store:** 1.2.0 (the merged "Everything for YouTube") has been uploaded by the owner. 1.4.0 ("What's new" card) is uploaded and
   **pending review** on the store; it also carries everything from 1.3.0 (room tab, no autoplay when alone, error toast, popup
   subsections, new `scripting` permission and `player.w2g.tv` optional host). Whether 1.2.1 / 1.3.0 were uploaded is unknown.
-  1.4.1 (the layout move only, no changelog entry so it updates quietly) is packaged and awaiting upload. The store rejects a
-  package whose version is not higher than the last upload, so **any change after a version is packaged must bump the version**
-  in `manifest.json` and `package.json` first (1.4.2 or higher next), then `npm run package`. Never rebuild an already
-  uploaded version's zip.
+  Unreleased since 1.4.0: the move to the kit layout (nothing user-visible, so it waits for the next real release). The store
+  rejects a package whose version is not higher than the last upload, so **the next release must bump the version** in
+  `manifest.json` and `package.json` first (1.4.1 or higher), then `npm run package`. Never rebuild an already uploaded
+  version's zip (`npm run package` overwrites `dist/` for the current version).
 
 - Not tested end to end in Chrome by the assistant: load unpacked and check each toggle, the
   permission prompt, the W button on the video page, and the toolbar icon sizes. The filter logic was
