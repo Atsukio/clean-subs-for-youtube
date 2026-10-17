@@ -138,3 +138,22 @@ chrome.runtime.onStartup.addListener(safeSync);
 chrome.permissions.onAdded.addListener(safeSync);
 chrome.permissions.onRemoved.addListener(safeSync);
 chrome.storage.onChanged.addListener((changes, area) => { if (area === 'sync' && changes.settings) safeSync(); });
+
+// "What's new": after an update, remember the version the user came from (the oldest one if several updates arrive before
+// the popup is opened) and mark the toolbar icon. The popup shows the changes since then; "Got it" clears both.
+// Reloading an unpacked copy also reports 'update', but with the same version, so it is ignored.
+function showWhatsNewBadge() {
+  chrome.action.setBadgeText({ text: 'NEW' });
+  chrome.action.setBadgeBackgroundColor({ color: '#3d6fd8' });
+  chrome.action.setBadgeTextColor?.({ color: '#ffffff' });
+}
+chrome.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
+  if (reason !== 'update' || !previousVersion || previousVersion === chrome.runtime.getManifest().version) return;
+  const { whatsNewFrom } = await chrome.storage.local.get('whatsNewFrom');
+  await chrome.storage.local.set({ whatsNewFrom: whatsNewFrom || previousVersion });
+  showWhatsNewBadge();
+});
+// Badge text does not survive a browser restart
+chrome.runtime.onStartup.addListener(async () => {
+  if ((await chrome.storage.local.get('whatsNewFrom')).whatsNewFrom) showWhatsNewBadge();
+});

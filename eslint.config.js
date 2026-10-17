@@ -2,7 +2,7 @@ const js = require("@eslint/js");
 const globals = require("globals");
 
 // Shared by the classic scripts (content scripts and the popup)
-const extensionGlobals = { ...globals.browser, ...globals.webextensions, EFY: "readonly" };
+const extensionGlobals = { ...globals.browser, ...globals.webextensions, EFY: "readonly", EFY_CHANGELOG: "readonly" };
 
 module.exports = [
   js.configs.recommended,

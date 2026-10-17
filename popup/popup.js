@@ -259,3 +259,35 @@ for (const group of document.querySelectorAll('details.group')) {
 
 EFY.loadRaw().then(renderSettings);
 renderRoom();
+
+// ---------- What's new ----------
+// The service worker stores the version the user updated from; show every changelog entry since then, up to this version.
+const versionCompare = (a, b) => {
+  const pa = a.split('.').map(Number);
+  const pb = b.split('.').map(Number);
+  for (let i = 0; i < 3; i++) if ((pa[i] || 0) !== (pb[i] || 0)) return (pa[i] || 0) - (pb[i] || 0);
+  return 0;
+};
+async function renderWhatsNew() {
+  const { whatsNewFrom } = await chrome.storage.local.get('whatsNewFrom');
+  if (!whatsNewFrom) return;
+  const current = chrome.runtime.getManifest().version;
+  const entries = (globalThis.EFY_CHANGELOG || [])
+    .filter((e) => versionCompare(e.version, whatsNewFrom) > 0 && versionCompare(e.version, current) <= 0);
+  if (!entries.length) return dismissWhatsNew(); // e.g. a release with nothing user-facing
+  $('whats-new-title').textContent = entries.length === 1 ? `What's new in ${entries[0].version}` : "What's new";
+  $('whats-new-list').replaceChildren(...entries.flatMap((e) => {
+    const list = document.createElement('ul');
+    list.append(...e.items.map((text) => Object.assign(document.createElement('li'), { textContent: text })));
+    if (entries.length === 1) return [list];
+    return [Object.assign(document.createElement('h3'), { textContent: e.version }), list];
+  }));
+  $('whats-new').hidden = false;
+}
+async function dismissWhatsNew() {
+  $('whats-new').hidden = true;
+  await chrome.storage.local.remove('whatsNewFrom');
+  await chrome.action.setBadgeText({ text: '' });
+}
+$('whats-new-dismiss').addEventListener('click', dismissWhatsNew);
+renderWhatsNew();

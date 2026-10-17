@@ -37,6 +37,7 @@ content/
   w2g/player.js          player.w2g.tv frame: pauses on joining when alone (registered at runtime)
   w2g/adapters/youtube.js   site adapter (selectors + getVideo)
 popup/                   settings popup (popup.html/css/js)
+  changelog.js           user-facing notes per release, shown once after an update ("What's new")
   theme.css              GENERATED M3 tokens for the popup
   fonts/                 GENERATED copy of Roboto 400/500 woff2 + licence
 lib/settings.js          feature toggles shared by content scripts and popup (globalThis.EFY)
@@ -118,6 +119,12 @@ After a code change, reload the extension card and refresh YouTube.
   there within the first 30s could be paused once more. Tested with two local origins standing in for w2g.tv and player.w2g.tv
   (headless Edge needs `--disable-site-isolation-trials --disable-features=IsolateOrigins,site-per-process`, otherwise the
   virtual clock does not run in the cross-origin frame); not tested on the real site.
+- **What's new:** on `runtime.onInstalled` with reason `update` and a different `previousVersion`, the service worker stores
+  `whatsNewFrom` (chrome.storage.local; keeps the oldest if several updates arrive unseen) and sets a "NEW" toolbar badge (re-set
+  on `onStartup`, badge text does not survive a restart). The popup shows a card at the top with every `EFY_CHANGELOG` entry
+  newer than `whatsNewFrom` and not newer than the running version; "Got it" clears the key and the badge. No permission needed,
+  no tab is opened, nothing on fresh install. Reloading an unpacked copy reports `update` with the same version, so to see the
+  card while developing, set `whatsNewFrom` to an older version from the service worker console.
 - Menu icons: `scripts/pixel-icons.mjs` (run by `npm run assets`) draws 16x16 pixel-art SVGs into `popup/pixel/` (youtube, w2g,
   share, pause) on the same navy tile as the extension icon; the popup shows them at 32x32. Edit the script, not the SVGs.
 - The popup groups (YouTube, Watch2Gether, Share settings) are collapsible `<details class="group" data-group="...">` with an M3
@@ -227,8 +234,8 @@ with **Roboto**.
   the real CSS and a popup preview generated from `popup/popup.html` (git-ignored). Re-run it after any UI
   change. They are clearly labelled illustrations with placeholder content; prefer real captures if they can be
   taken without personal data.
-- Release: bump `version` in `manifest.json` and `package.json`, `npm run lint`, `npm run package`,
-  upload the zip from `dist/`.
+- Release: bump `version` in `manifest.json` and `package.json`, add a plain-language entry for that version at the top of
+  `popup/changelog.js` (what users will notice, not internals), `npm run lint`, `npm run package`, upload the zip from `dist/`.
 
 ## Icon
 

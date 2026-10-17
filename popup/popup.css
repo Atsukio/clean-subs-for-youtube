@@ -283,3 +283,17 @@ button.text.danger { color: var(--md-sys-color-error); }
 
 /* Pause all features: the rest stays visible but is clearly inactive */
 body.paused #settings { opacity: .5; }
+
+/* ---------- What's new (shown once after an update) ---------- */
+.whats-new {
+  margin: 8px 0 8px;
+  padding: 12px 12px 4px 16px;
+  border-radius: var(--md-sys-shape-medium);
+  background: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+}
+.whats-new h2 { color: inherit; }
+.whats-new h3 { margin: 8px 0 0; color: inherit; }
+.whats-new ul { margin: 4px 0 0; padding-left: 18px; font: var(--md-sys-typescale-body-small); letter-spacing: .4px; }
+.whats-new li + li { margin-top: 4px; }
+.whats-new .actions { margin-top: 4px; }
